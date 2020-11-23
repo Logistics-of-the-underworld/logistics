@@ -1,5 +1,6 @@
 package com.tiandi.logistics;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2020/11/23 15:25
  */
 @SpringBootApplication
+@MapperScan("com.tiandi.logistics.mapper")
 public class LogisticsApplication {
 
     public static void main(String[] args) {
