@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @since 2020/11/23 15:51
  */
 @Component
-public class RedisUtil {
+public final class RedisUtil {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 

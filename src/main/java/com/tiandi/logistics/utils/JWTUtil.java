@@ -14,7 +14,7 @@ import java.util.Date;
  * @version 1.0
  * @since 2020/11/23 15:39
  */
-public class JWTUtil {
+public final class JWTUtil {
     // 过期时间 24 小时
     private static final long EXPIRE_TIME = 60 * 24 * 60 * 1000;
     // 密钥

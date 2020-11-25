@@ -1,16 +1,19 @@
 server:
   port: 8082
+#激活账户后返回的主界面的地址值
+font:
+  url: http://www.baidu.com
 spring:
   application:
     name: identity_service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://182.92.208.18:3306/hypermarket?useUnicode=true&characterEncoding=utf-8
-    username: hypermarket
-    password: HairLine
+    url: jdbc:mysql://111.229.66.183:3306/logistics_tp?useUnicode=true&characterEncoding=utf-8
+    username: emiya
+    password: imouto949
     type: com.alibaba.druid.pool.DruidDataSource
   redis:
-    database: 3
+    database: 0
     host: 182.92.208.18
     port: 6379
     password: Wuyue88@
@@ -36,6 +39,6 @@ mybatis-plus:
       field-strategy: NOT_EMPTY
       db-type: MYSQL
   configuration:
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

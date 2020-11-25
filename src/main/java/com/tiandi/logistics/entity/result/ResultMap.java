@@ -1,6 +1,7 @@
 package com.tiandi.logistics.entity.result;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.HashMap;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
  * @since 2020/11/23 15:59
  */
 @Component
+@RequestScope
 public class ResultMap extends HashMap<String, Object> {
 
     public ResultMap() {
@@ -17,6 +19,7 @@ public class ResultMap extends HashMap<String, Object> {
 
     public ResultMap success() {
         this.put("result", "success");
+        this.code(20000);
         return this;
     }
 

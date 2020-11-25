@@ -4,6 +4,9 @@ import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -18,7 +21,7 @@ import java.util.UUID;
  * @since 2020/11/23 15:50
  */
 @Slf4j
-public class MinioUtil {
+public final class MinioUtil {
 
     private static MinioUtil minioUtil;
 
@@ -64,13 +67,33 @@ public class MinioUtil {
      * @param file 待操作文件
      * @return 文件全地址
      */
-    public String upLoadFile(MultipartFile file) {
+    public String upLoadMultipartFile(MultipartFile file) {
         String url = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String ymd = sdf.format(new Date());
         String objectName = ymd + "/" + UUID.randomUUID().toString();
         try {
             minioClient.putObject("project", objectName, file.getInputStream(), file.getContentType());
+            url = minioClient.getObjectUrl("project", objectName);
+        } catch (Exception e) {
+            log.error("restClient.close occur error", e);
+        }
+        return url;
+    }
+
+    /**
+     * 通过流（未开发完全）
+     * @param inputStream
+     * @param contentType
+     * @return
+     */
+    public String upLoadFile(InputStream inputStream,String contentType) {
+        String url = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String ymd = sdf.format(new Date());
+        String objectName = ymd + "/" + UUID.randomUUID().toString();
+        try {
+            minioClient.putObject("project", objectName, inputStream, contentType);
             url = minioClient.getObjectUrl("project", objectName);
         } catch (Exception e) {
             log.error("restClient.close occur error", e);

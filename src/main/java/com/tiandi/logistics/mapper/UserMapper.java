@@ -1,7 +1,7 @@
 package com.tiandi.logistics.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.tiandi.logistics.entity.User;
+import com.tiandi.logistics.entity.pojo.User;
 
 /**
  * @author Yue Wu
