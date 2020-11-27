@@ -108,6 +108,16 @@ public class Order extends BaseEntity {
     private String idLicense;
 
     /**
+     * 快递员姓名
+     */
+    private String courier;
+
+    /**
+     * 快递员电话
+     */
+    private String courierPhone;
+
+    /**
      * 备注
      */
     private String marks;

@@ -35,6 +35,11 @@ public class Company extends BaseEntity {
     private String nameCompany;
 
     /**
+     * 上级公司，如果值为空则为总公司，如果有值则为分公司
+     */
+    private String headCompany;
+
+    /**
      * 逻辑删除
      */
     private Integer isDelete;

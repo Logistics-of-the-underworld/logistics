@@ -30,6 +30,11 @@ public class Vehicle extends BaseEntity {
     private String idLicense;
 
     /**
+     * 驾驶员
+     */
+    private String driverName;
+
+    /**
      * 型号
      */
     private String type;

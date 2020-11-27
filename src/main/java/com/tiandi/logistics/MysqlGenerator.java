@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * @ClassName MysqlGenerator
- * @Description 
+ * @Description
  * @Author kotori
  */
 public class MysqlGenerator {
