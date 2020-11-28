@@ -123,6 +123,11 @@ public class Order extends BaseEntity {
     private String marks;
 
     /**
+     * 审核人
+     */
+    private String reviewer;
+
+    /**
      * 逻辑删除
      */
     private Integer isDelete;
