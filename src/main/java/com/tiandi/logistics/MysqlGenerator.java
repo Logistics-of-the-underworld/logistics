@@ -43,7 +43,7 @@ public class MysqlGenerator {
         gc.setServiceName("%sService");
         gc.setIdType(IdType.ASSIGN_ID);//主键策略
         //开启Swagger2模式
-//        gc.setSwagger2(true);
+        gc.setSwagger2(true);
         mpg.setGlobalConfig(gc);
 
         // 数据源配置

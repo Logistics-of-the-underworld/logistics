@@ -21,6 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -86,7 +87,7 @@ public class ControllerLogAspect {
 
         sysBusinessLog.setResult(result.get("message").toString());
 
-        sysBusinessLog.setOperationTime(new Date());
+        sysBusinessLog.setOperationTime(LocalDateTime.now());
         sysBusinessLog.setRequestUrl(url + "&"+ param);
         sysBusinessLog.setMethodName(className + "." + methodName + "()");
         sysBusinessLog.setIpAddress(ip);

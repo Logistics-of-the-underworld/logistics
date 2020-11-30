@@ -3,6 +3,8 @@ package com.tiandi.logistics.entity.pojo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,11 +14,12 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author TP
- * @since 2020-11-25
+ * @since 2020-11-30
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("tp_goods_sort")
+@ApiModel(value="GoodsSort对象", description="货物类别管理")
 public class GoodsSort extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
@@ -24,19 +27,13 @@ public class GoodsSort extends BaseEntity {
     @TableId(value = "id_tp_goods_sort", type = IdType.AUTO)
     private Integer idTpGoodsSort;
 
-    /**
-     * 货物类别编号（自增）
-     */
+    @ApiModelProperty(value = "货物类别编号（自增）")
     private Integer idSortGoods;
 
-    /**
-     * 货物类别名称
-     */
+    @ApiModelProperty(value = "货物类别名称")
     private String sortGoodsName;
 
-    /**
-     * 逻辑删除
-     */
+    @ApiModelProperty(value = "逻辑删除")
     private Integer isDelete;
 
 

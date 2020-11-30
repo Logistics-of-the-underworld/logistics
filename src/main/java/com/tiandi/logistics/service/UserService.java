@@ -2,7 +2,6 @@ package com.tiandi.logistics.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tiandi.logistics.entity.pojo.User;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Yue Wu

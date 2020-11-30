@@ -13,6 +13,7 @@ import com.tiandi.logistics.utils.Md5Encoding;
 import com.tiandi.logistics.utils.MinioUtil;
 import com.tiandi.logistics.utils.RedisUtil;
 import com.tiandi.logistics.utils.SMSSendingUtil;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
  */
 @RestController
 @RequestMapping("/auth")
+@Api(tags = "用户注册")
 public class UserRegisterController {
 
     @Autowired
@@ -60,6 +62,16 @@ public class UserRegisterController {
      */
     @PostMapping("/register")
     @ControllerLogAnnotation(remark = "注册功能", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.ADD)
+    @ApiOperation(value = "用户注册接口",notes = "继承普通用户注册及公司内部添加员工方法为一体\n利用缺省的空值作为判断依据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userStr", value = "User实体类JSON字符串", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "icon", value = "用户头像", paramType = "query", dataType = "MultipartFile"),
+            @ApiImplicitParam(name = "code", value = "六位验证码，用于手机号注册用户使用", paramType = "query", dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "登陆成功！"),
+            @ApiResponse(code = 50011, message = "验证码过期，请重新获取")
+    })
     public ResultMap register(@RequestParam("user") String userStr,
                               @RequestParam(value = "icon", required = false) MultipartFile file,
                               @RequestParam(value = "code", required = false) String code) {
@@ -71,7 +83,7 @@ public class UserRegisterController {
         User user = JSON.parseObject(userStr, User.class);
         //判断手机验证码是否过期，如若过期则直接拒绝
         if (null != user.getPhone() && code != null && !code.equals(redisUtil.get(user.getPhone() + "TP").toString())) {
-            return resultMap.fail().message("验证码过期，请重新获取");
+            return resultMap.code(50010).fail().message("验证码过期，请重新获取");
         }
         if (null == user.getRole()) {
             //强制配置权限
@@ -130,6 +142,9 @@ public class UserRegisterController {
      */
     @PostMapping("/getRegisterPhoneCode")
     @ControllerLogAnnotation(sysType = SysTypeEnum.CUSTOMER, opType = OpTypeEnum.ADD)
+    @ApiOperation(value = "手机短信注册验证码获取接口")
+    @ApiImplicitParam(name = "phone", value = "手机号码", required = true, paramType = "query", dataType = "String")
+    @ApiResponse(code = 40000, message = "短信已发送")
     public ResultMap getPhoneCode(@RequestParam("phone") String phone) throws Exception {
 
         if (!phoneRole.matcher(phone).matches()) {
@@ -171,38 +186,56 @@ public class UserRegisterController {
      * @return 是否可用 => 200 可用 => 201 不可用
      */
     @GetMapping("/verifyUsername/{username}")
+    @ApiOperation(value = "表单校验支持接口 —— username")
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, paramType = "path", dataType = "String")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "可用"),
+            @ApiResponse(code = 50013, message = "已被使用")
+    })
     public ResultMap verifyUsername(@PathVariable String username) {
         if (userService.count(new QueryWrapper<User>().eq("username", username)) < 1) {
             return resultMap.success().message("可用");
         }
-        return resultMap.success().code(201).message("已被使用");
+        return resultMap.success().code(50013).message("已被使用");
     }
 
     /**
      * 表单校验支持接口 —— email
      *
-     * @param email 用户名
+     * @param email 邮箱
      * @return 是否可用 => 200 可用 => 201 不可用
      */
     @GetMapping("/verifyEmail/{email}")
+    @ApiOperation(value = "表单校验支持接口 —— email")
+    @ApiImplicitParam(name = "email", value = "邮箱", required = true, paramType = "path", dataType = "String")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "可用"),
+            @ApiResponse(code = 50013, message = "已被使用")
+    })
     public ResultMap verifyEmail(@PathVariable String email) {
         if (userService.count(new QueryWrapper<User>().eq("email", email)) < 1) {
             return resultMap.success().message("可用");
         }
-        return resultMap.success().code(201).message("已被使用");
+        return resultMap.success().code(50013).message("已被使用");
     }
 
     /**
      * 表单校验支持接口 —— phone
      *
-     * @param phone 用户名
+     * @param phone 手机号码
      * @return 是否可用 => 200 可用 => 201 不可用
      */
     @GetMapping("/verifyPhone/{phone}")
+    @ApiOperation(value = "表单校验支持接口 —— phone")
+    @ApiImplicitParam(name = "phone", value = "手机号码", required = true, paramType = "path", dataType = "String")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "可用"),
+            @ApiResponse(code = 50013, message = "已被使用")
+    })
     public ResultMap verifyPhone(@PathVariable String phone) {
         if (userService.count(new QueryWrapper<User>().eq("phone", phone)) < 1) {
             return resultMap.success().message("可用");
         }
-        return resultMap.success().code(201).message("已被使用");
+        return resultMap.success().code(50013).message("已被使用");
     }
 }

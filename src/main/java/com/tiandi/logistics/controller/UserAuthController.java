@@ -14,8 +14,12 @@ import com.tiandi.logistics.utils.JWTUtil;
 import com.tiandi.logistics.utils.Md5Encoding;
 import com.tiandi.logistics.utils.RedisUtil;
 import com.tiandi.logistics.utils.SMSSendingUtil;
+import io.swagger.annotations.*;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.service.ParameterType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -36,6 +40,7 @@ import java.util.regex.Pattern;
  */
 @RestController
 @RequestMapping("/auth")
+@Api(tags = "用户登录")
 public class UserAuthController {
 
     @Autowired
@@ -65,6 +70,17 @@ public class UserAuthController {
      */
     @PostMapping("/login")
     @ControllerLogAnnotation(remark = "用户登录——用户名密码方式", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.LOGIN)
+    @ApiOperation(value = "用户登录接口",notes = "支持用户名、邮箱、手机号码三种登录输入，该方法为传统的密码校验方式")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "identification", value = "用户名、邮箱、手机号码选其一", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "query", dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "修改成功！请稍后前往邮箱进行激活！"),
+            @ApiResponse(code = 50010, message = "服务器内部错误"),
+            @ApiResponse(code = 50011, message = "账户已被封禁，请另行注册!"),
+            @ApiResponse(code = 50012, message = "密码错误或账户不存在!")
+    })
     public ResultMap login(@RequestParam("identification") String identification, @RequestParam("password") String password) {
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -81,10 +97,10 @@ public class UserAuthController {
 
         if (user != null && user.getPassword().equals(Md5Encoding.md5RanSaltEncode(password, user.getSalt()))) {
             if (user.getBan() == 1) {
-                return resultMap.fail().message("账户未激活，请激活后进行登录!");
+                return resultMap.fail().code(50010).message("账户未激活，请激活后进行登录!");
             }
             if (user.getIsDelete() == 1) {
-                return resultMap.fail().message("账户已被封禁，请另行注册!");
+                return resultMap.fail().code(50011).message("账户已被封禁，请另行注册!");
             }
             Role role = roleService.getOne(new QueryWrapper<Role>().eq("id_tb_role", user.getRole()));
             List<String> list = new ArrayList<>();
@@ -98,7 +114,7 @@ public class UserAuthController {
             redisUtil.set(user.getUsername(), token, 60 * 60 * 24);
             resultMap.success().message("登陆成功！").addElement("token", token);
         } else {
-            resultMap.fail().message("密码错误或账户不存在!");
+            resultMap.fail().code(50012).message("密码错误或账户不存在!");
         }
 
         return resultMap;
@@ -113,9 +129,15 @@ public class UserAuthController {
      */
     @PostMapping("/getPhoneLoginCode")
     @ControllerLogAnnotation(sysType = SysTypeEnum.CUSTOMER, opType = OpTypeEnum.ADD)
+    @ApiOperation(value = "手机短信登录验证码获取接口")
+    @ApiImplicitParam(name = "phone", value = "手机号码", required = true, paramType = "query", dataType = "String")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "短信已发送"),
+            @ApiResponse(code = 50011, message = "请输入正确的手机号")
+    })
     public ResultMap getPhoneLoginCode(@RequestParam("phone") String phone) throws Exception {
         if (!phoneRole.matcher(phone).matches()) {
-            return resultMap.fail().message("请输入正确的手机号");
+            return resultMap.fail().code(50011).message("请输入正确的手机号");
         }
 
         StringBuilder builder = new StringBuilder();
@@ -154,6 +176,15 @@ public class UserAuthController {
      */
     @PostMapping("/loginByPhone")
     @ControllerLogAnnotation(remark = "用户登录——电话验证", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.LOGIN)
+    @ApiOperation(value = "手机短信登录接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号码", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "code", value = "六位验证码", required = true, paramType = "query", dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "登陆成功！"),
+            @ApiResponse(code = 50011, message = "验证码过期，请重新获取")
+    })
     public ResultMap loginByPhone(@RequestParam("phone") String phone, @RequestParam("code") String code) {
 
         QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("phone", phone);
@@ -170,7 +201,7 @@ public class UserAuthController {
             redisUtil.set(user.getUsername(), token, 60 * 60 * 24);
             return resultMap.success().message("登陆成功！").addElement("token", token);
         } else {
-            return resultMap.success().message("验证码过期，请重新获取");
+            return resultMap.fail().code(50011).message("验证码过期，请重新获取");
         }
     }
 
@@ -181,6 +212,10 @@ public class UserAuthController {
      * @return
      */
     @GetMapping("/getInf")
+    @ApiOperation(value = "前端授权信息获取接口")
+    @ApiImplicitParam(name = "token", value = "用户登陆凭证", required = true, paramType = "header", dataType = "String")
+    @ApiResponse(code = 40000, message = "认证信息返回")
+    @RequiresRoles(logical = Logical.OR,value = {"user","driver","vehicleManager","distribution","branchCompany","headCompany","admin"})
     public ResultMap getInf(@RequestHeader String token) {
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();

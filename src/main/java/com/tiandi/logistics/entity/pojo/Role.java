@@ -3,6 +3,8 @@ package com.tiandi.logistics.entity.pojo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,11 +14,12 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author TP
- * @since 2020-11-25
+ * @since 2020-11-30
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("tp_role")
+@ApiModel(value="Role对象", description="用户权限表")
 public class Role extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
@@ -24,14 +27,10 @@ public class Role extends BaseEntity {
     @TableId(value = "id_tb_role", type = IdType.AUTO)
     private Integer idTbRole;
 
-    /**
-     * 身份
-     */
+    @ApiModelProperty(value = "身份")
     private String role;
 
-    /**
-     * 权限
-     */
+    @ApiModelProperty(value = "权限")
     private String permission;
 
 
