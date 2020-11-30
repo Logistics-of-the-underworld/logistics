@@ -18,13 +18,13 @@ public class ResultMap extends HashMap<String, Object> {
     }
 
     public ResultMap success() {
-        this.put("result", "success");
+        this.put("status", "success");
         this.code(20000);
         return this;
     }
 
     public ResultMap fail() {
-        this.put("result", "fail");
+        this.put("status", "fail");
         return this;
     }
 

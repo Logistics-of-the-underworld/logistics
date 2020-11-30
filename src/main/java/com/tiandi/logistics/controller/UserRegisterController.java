@@ -2,6 +2,9 @@ package com.tiandi.logistics.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
+import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
+import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.async.AsyncMailTask;
 import com.tiandi.logistics.entity.pojo.User;
 import com.tiandi.logistics.entity.result.ResultMap;
@@ -9,12 +12,19 @@ import com.tiandi.logistics.service.UserService;
 import com.tiandi.logistics.utils.Md5Encoding;
 import com.tiandi.logistics.utils.MinioUtil;
 import com.tiandi.logistics.utils.RedisUtil;
+import com.tiandi.logistics.utils.SMSSendingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * @author Yue Wu
@@ -35,50 +45,56 @@ public class UserRegisterController {
     private UserService userService;
 
     /**
+     * 电话校验正则表达式
+     */
+    private final Pattern phoneRole = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
+
+    /**
      * 注册方法，此处全套不进行实体内部的值的判断
-     * 所有校验交由前端进行处理！
-     * <p>
-     * **此注册方法为使用默认头像进行注册的方法接口
-     * <p>
-     * 数据库中允许为空的字段：
-     * icon(用户头像，提供默认头像)
-     * pet_name(用户昵称，为空则提供随机生成)
-     * phone(直接null值即可)
-     * [email,phone](两者取其一为空，涉及到用户激活处理) => 此处暂不能实现phone的相关激活功能实现
-     * 其余字段：
-     * username
-     * password
-     * pc_role
-     * 均不可为空
-     * 用户管理权限核心由管理员分配，注册只允许注册普通用户权限！
-     * =>数据库默认值，同时后端处理也会强制修改为用户权限对应值
+     * 一个方法包含多种注册实现方式
+     * 如果通过电话注册，那么在进行直接通过短信获取验证码即可进行用户的激活处理
+     * 邮箱注册主要是实现企业添加员工账号时使用的一种方式
      *
      * @param userStr User对应的JSON字符串
      * @return 注册提示信息
      */
     @PostMapping("/register")
-    public ResultMap register(@RequestParam("user") String userStr, @RequestParam(value = "icon", required = false) MultipartFile file) {
+    @ControllerLogAnnotation(remark = "注册功能", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.ADD)
+    public ResultMap register(@RequestParam("user") String userStr,
+                              @RequestParam(value = "icon", required = false) MultipartFile file,
+                              @RequestParam(value = "code", required = false) String code) {
         //判空，防止抛出异常
         if (userStr == null || "".equals(userStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");
         }
         //JSON转换对象
         User user = JSON.parseObject(userStr, User.class);
-        //强制配置权限
-        user.setRole(1);
+        //判断手机验证码是否过期，如若过期则直接拒绝
+        if (null != user.getPhone() && code != null && !code.equals(redisUtil.get(user.getPhone() + "TP").toString())) {
+            return resultMap.fail().message("验证码过期，请重新获取");
+        }
+        if (null == user.getRole()) {
+            //强制配置权限
+            user.setRole(1);
+        }
         //默认用户昵称
         if (user.getPetname() == null || "".equals(user.getPetname())) {
             user.setPetname("TP用户" + new Random().nextInt(1000));
         }
-        //UUID为键，存储在Redis中，供激活使用
-        String userUUID = UUID.randomUUID().toString();
-        user.setActiveuuid(userUUID);
+
         //密码加密处理
         String salt = Md5Encoding.md5RandomSaltGenerate();
         user.setSalt(salt);
         user.setPassword(Md5Encoding.md5RanSaltEncode(user.getPassword(), salt));
-        System.out.println(user);
+        //UUID为键，存储在Redis中，供激活使用
+        String userUUID = UUID.randomUUID().toString();
+        user.setActiveuuid(userUUID);
         boolean insert = false;
+        if (user.getPhone() == null || "".equals(user.getPhone())) {
+            user.setBan(1);
+        } else {
+            user.setBan(0);
+        }
         //判断是否有用户头像的输入
         if (file != null) {
             user.setIcon(MinioUtil.getInstance().upLoadMultipartFile(file));
@@ -88,17 +104,64 @@ public class UserRegisterController {
             //插入操作
             insert = userService.save(user);
         }
-        //注册成功后的激活邮箱发送逻辑
+        //注册成功后的逻辑判断
         if (insert) {
-            System.out.println(user.getIdTbUser());
-            //Reds保存(UUID，userID)键值对
-            redisUtil.set(userUUID, user.getIdTbUser(), 60 * 60 * 24);
-            //异步提交激活邮件发送请求
-            mailTask.activeMailTask(userUUID,user.getEmail());
-            return resultMap.success().message("注册成功！请稍后前往邮箱进行激活！");
+            if (user.getPhone() != null) {
+                redisUtil.del(user.getPhone() + "TP");
+                return resultMap.success().message("注册成功！");
+            } else {
+                //Reds保存(UUID，userID)键值对
+                redisUtil.set(userUUID, user.getIdTbUser(), 60 * 60 * 24);
+                //异步提交激活邮件发送请求
+                mailTask.activeMailTask(userUUID, user.getEmail());
+                return resultMap.success().message("添加成功！请通知其前往邮箱进行激活！");
+            }
         }
         //所有方法均为匹配，特殊处理返回
         return resultMap.fail().code(40010).message("服务器内部错误");
+    }
+
+    /**
+     * 用户注册获取手机验证码进行注册验证
+     *
+     * @param phone 手机号
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/getRegisterPhoneCode")
+    @ControllerLogAnnotation(sysType = SysTypeEnum.CUSTOMER, opType = OpTypeEnum.ADD)
+    public ResultMap getPhoneCode(@RequestParam("phone") String phone) throws Exception {
+
+        if (!phoneRole.matcher(phone).matches()) {
+            return resultMap.fail().message("请输入正确的手机号");
+        }
+
+        StringBuilder builder = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            builder.append(random.nextInt(10));
+        }
+
+        //反射拿到对应方法
+        Method method = UserRegisterController.class.getDeclaredMethod("getPhoneCode", String.class);
+        //获取日志切面注解
+        ControllerLogAnnotation annotation = method.getAnnotation(ControllerLogAnnotation.class);
+        //获取注解实例所持有的的InvocationHandler
+        InvocationHandler handler = Proxy.getInvocationHandler(annotation);
+        //获取该注解中所有的属性
+        Field field = handler.getClass().getDeclaredField("memberValues");
+        //该属性为private final的，需要开启权限
+        field.setAccessible(true);
+        //获取map对象
+        Map<String, Object> memberValues = (Map<String, Object>) field.get(handler);
+        //利用反射修改
+        memberValues.put("remark", "发送至 " + phone + " 的注册验证码为： " + builder.toString());
+
+        builder.append("TP");
+        redisUtil.set(phone, builder.toString(), 60 * 5);
+        SMSSendingUtil.sendALiSms(phone, builder.toString());
+
+        return resultMap.success().message("短信已发送");
     }
 
     /**

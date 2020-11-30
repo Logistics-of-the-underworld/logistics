@@ -5,15 +5,13 @@ import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.pojo.BusinessLog;
+import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.utils.IpUtil;
 import com.tiandi.logistics.utils.JWTUtil;
 import com.tiandi.logistics.utils.LogQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -47,12 +45,12 @@ public class ControllerLogAspect {
      * AfterRunning: 返回通知 rsult为返回内容
      * @param joinPoint 切入点
      */
-    @Before(value="logPointCut()")
-    public void before(JoinPoint joinPoint){
-        log.info("调用了前置通知");
+    @AfterReturning(returning = "result",value="logPointCut()")
+    public void before(JoinPoint joinPoint,ResultMap result){
+        log.info("调用了后置通知");
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        handle(joinPoint,null,request);
-
+        handle(joinPoint,null,request,result);
+        log.info("调用后置通知结束");
     }
 
     /**
@@ -64,12 +62,12 @@ public class ControllerLogAspect {
     public void afterReturningMethod(JoinPoint joinPoint, Exception e) {
         log.info("调用了异常通知");
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        handle(joinPoint,e,request);
-
+        handle(joinPoint,e,request,null);
+        log.info("调用异常通知结束");
     }
 
     @Async
-    public void handle(final JoinPoint joinPoint,final Exception e,final HttpServletRequest request){
+    public void handle(final JoinPoint joinPoint,final Exception e,final HttpServletRequest request,final ResultMap result){
         BusinessLog sysBusinessLog = new BusinessLog();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -86,6 +84,8 @@ public class ControllerLogAspect {
         String url = request.getRequestURI();
         String param = getParams(joinPoint);
 
+        sysBusinessLog.setResult(result.get("message").toString());
+
         sysBusinessLog.setOperationTime(new Date());
         sysBusinessLog.setRequestUrl(url + "&"+ param);
         sysBusinessLog.setMethodName(className + "." + methodName + "()");
@@ -97,6 +97,7 @@ public class ControllerLogAspect {
         } else {
             String token = request.getHeader("token");
             if (token != null && !"".equals(token)) {
+                sysBusinessLog.setOpUsername(JWTUtil.getUsername(token));
                 sysBusinessLog.setOpRole(JWTUtil.getUserRole(token));
             }
         }

@@ -13,11 +13,18 @@ import com.tiandi.logistics.service.UserService;
 import com.tiandi.logistics.utils.JWTUtil;
 import com.tiandi.logistics.utils.Md5Encoding;
 import com.tiandi.logistics.utils.RedisUtil;
+import com.tiandi.logistics.utils.SMSSendingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -57,7 +64,7 @@ public class UserAuthController {
      * @return
      */
     @PostMapping("/login")
-    @ControllerLogAnnotation(remark = "用户登录",sysType = SysTypeEnum.NORMAL,opType = OpTypeEnum.LOGIN)
+    @ControllerLogAnnotation(remark = "用户登录——用户名密码方式", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.LOGIN)
     public ResultMap login(@RequestParam("identification") String identification, @RequestParam("password") String password) {
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -89,12 +96,82 @@ public class UserAuthController {
                 redisUtil.del(user.getUsername());
             }
             redisUtil.set(user.getUsername(), token, 60 * 60 * 24);
-            resultMap.success().message(token);
+            resultMap.success().message("登陆成功！").addElement("token", token);
         } else {
             resultMap.fail().message("密码错误或账户不存在!");
         }
 
         return resultMap;
+    }
+
+    /**
+     * 登陆用短信验证码获取接口
+     *
+     * @param phone 登录用手机号
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/getPhoneLoginCode")
+    @ControllerLogAnnotation(sysType = SysTypeEnum.CUSTOMER, opType = OpTypeEnum.ADD)
+    public ResultMap getPhoneLoginCode(@RequestParam("phone") String phone) throws Exception {
+        if (!phoneRole.matcher(phone).matches()) {
+            return resultMap.fail().message("请输入正确的手机号");
+        }
+
+        StringBuilder builder = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            builder.append(random.nextInt(10));
+        }
+
+        //反射拿到对应方法
+        Method method = UserAuthController.class.getDeclaredMethod("getPhoneLoginCode", String.class);
+        //获取日志切面注解
+        ControllerLogAnnotation annotation = method.getAnnotation(ControllerLogAnnotation.class);
+        //获取注解实例所持有的的InvocationHandler
+        InvocationHandler handler = Proxy.getInvocationHandler(annotation);
+        //获取该注解中所有的属性
+        Field field = handler.getClass().getDeclaredField("memberValues");
+        //该属性为private final的，需要开启权限
+        field.setAccessible(true);
+        //获取map对象
+        Map<String, Object> memberValues = (Map<String, Object>) field.get(handler);
+        //利用反射修改
+        memberValues.put("remark", "发送至 " + phone + " 的登陆验证码为： " + builder.toString());
+
+        redisUtil.set(phone, builder.toString(), 60 * 5);
+        SMSSendingUtil.sendALiSms(phone, builder.toString());
+
+        return resultMap.success().message("短信已发送");
+    }
+
+    /**
+     * 手机号登陆接口
+     *
+     * @param phone 电话
+     * @param code  验证码
+     * @return
+     */
+    @PostMapping("/loginByPhone")
+    @ControllerLogAnnotation(remark = "用户登录——电话验证", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.LOGIN)
+    public ResultMap loginByPhone(@RequestParam("phone") String phone, @RequestParam("code") String code) {
+
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("phone", phone);
+
+        if (redisUtil.hasKey(phone) && code != null && code.equals(redisUtil.get(phone))) {
+            User user = userService.getOne(wrapper);
+            Role role = roleService.getOne(new QueryWrapper<Role>().eq("id_tb_role", user.getRole()));
+            List<String> list = new ArrayList<>();
+            list.add(role.getRole());
+            list.add(role.getPermission());
+            String token = JWTUtil.createToken(user.getUsername(), user.getIdTbUser().toString(),
+                    role.getRole(), role.getPermission(), JSON.toJSONString(list));
+            redisUtil.del(phone);
+            redisUtil.set(user.getUsername(), token, 60 * 60 * 24);
+            return resultMap.success().message("登陆成功！").addElement("token", token);
+        } else {
+            return resultMap.success().message("验证码过期，请重新获取");
+        }
     }
 
     /**
@@ -116,7 +193,7 @@ public class UserAuthController {
 
         resultMap.success().addElement("username", user.getUsername()).addElement("email", user.getEmail())
                 .addElement("phone", user.getPhone()).addElement("role", replace)
-                .addElement("petName", user.getPetname());
+                .addElement("petName", user.getPetname()).message("认证信息返回");
 
         return resultMap;
     }

@@ -38,6 +38,11 @@ public class BusinessLog implements Serializable {
     private String remark;
 
     /**
+     * 执行结果
+     */
+    private String result;
+
+    /**
      * 系统平台
      */
     private String sysType;

@@ -119,6 +119,13 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- 短信发送依赖 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
