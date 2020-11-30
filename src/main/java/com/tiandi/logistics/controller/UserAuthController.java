@@ -2,6 +2,9 @@ package com.tiandi.logistics.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
+import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
+import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.pojo.Role;
 import com.tiandi.logistics.entity.pojo.User;
 import com.tiandi.logistics.entity.result.ResultMap;
@@ -54,6 +57,7 @@ public class UserAuthController {
      * @return
      */
     @PostMapping("/login")
+    @ControllerLogAnnotation(remark = "用户登录",sysType = SysTypeEnum.NORMAL,opType = OpTypeEnum.LOGIN)
     public ResultMap login(@RequestParam("identification") String identification, @RequestParam("password") String password) {
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();

@@ -22,7 +22,7 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  */
 @Aspect
 @Configuration
-public class TransactionAdviceConfig {
+public class TransactionAdviceAspect {
     private static final String AOP_POINTCUT_EXPRESSION = "execution (* com..service.*.*(..))";
 
     @Autowired
