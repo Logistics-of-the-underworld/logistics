@@ -64,7 +64,7 @@ public class UserRegisterController {
     @ControllerLogAnnotation(remark = "注册功能", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.ADD)
     @ApiOperation(value = "用户注册接口",notes = "继承普通用户注册及公司内部添加员工方法为一体\n利用缺省的空值作为判断依据")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userStr", value = "User实体类JSON字符串", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "user", value = "User实体类JSON字符串", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "icon", value = "用户头像", paramType = "query", dataType = "MultipartFile"),
             @ApiImplicitParam(name = "code", value = "六位验证码，用于手机号注册用户使用", paramType = "query", dataType = "String")
     })
