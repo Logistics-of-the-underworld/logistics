@@ -19,7 +19,7 @@ import java.io.IOException;
  * @since 2020/12/1 14:38
  */
 @Component
-public class BarCodeUtil {
+public final class BarCodeUtil {
 
     /**
      * 生成code128条形码
