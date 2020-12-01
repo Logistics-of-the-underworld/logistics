@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2020/11/23 16:02
  */
 @RestControllerAdvice
+@ApiIgnore
 public class ExceptionAdviceController {
 
     private final ResultMap resultMap;

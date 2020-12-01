@@ -54,10 +54,7 @@ public class ActivationController {
      */
     @GetMapping("/activation/{userID}")
     @ApiOperation(value = "邮箱添加的用户激活接口")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "response", value = "响应体，非传递参数", paramType = "query", dataType = "HttpServletResponse"),
-            @ApiImplicitParam(name = "userID", value = "激活的用户ID", required = true, paramType = "path", dataType = "String")
-    })
+    @ApiImplicitParam(name = "userID", value = "激活的用户ID", required = true, paramType = "path", dataType = "String")
     @ApiResponses({
             @ApiResponse(code = 50001, message = "验证码已过期，请重新登录获取激活邮件"),
             @ApiResponse(code = 40000, message = "成功请求自动跳转"),

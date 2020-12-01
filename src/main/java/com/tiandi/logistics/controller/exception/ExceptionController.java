@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.UnsupportedEncodingException;
 
@@ -14,6 +15,7 @@ import java.io.UnsupportedEncodingException;
  * @since 2020/11/23 15:58
  */
 @RestController
+@ApiIgnore
 public class ExceptionController {
 
     @Autowired
