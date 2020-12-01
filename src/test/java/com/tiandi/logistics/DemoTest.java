@@ -1,6 +1,6 @@
 package com.tiandi.logistics;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tiandi.logistics.entity.pojo.User;
 import com.tiandi.logistics.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,10 @@ public class DemoTest {
 
     @Test
     public void test() {
-        boolean remove = userService.remove(new QueryWrapper<User>().eq("username", "root"));
-        System.out.println(remove);
+        Page<User> page = new Page<>(1, 3);
+        Page<User> userList = userService.getBaseMapper().selectPage(page, null);
+        userList.getRecords().forEach(System.out::println);
+        System.out.println("size: " + userList.getSize());
+        System.out.println("total: " + userList.getTotal());
     }
 }
