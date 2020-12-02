@@ -17,10 +17,9 @@ import lombok.EqualsAndHashCode;
  * @since 2020-11-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tp_role")
 @ApiModel(value="Role对象", description="用户权限表")
-public class Role extends BaseEntity {
+public class Role {
 
     private static final long serialVersionUID = 1L;
 

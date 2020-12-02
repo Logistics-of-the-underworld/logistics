@@ -6,14 +6,17 @@ import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.async.AsyncMailTask;
+import com.tiandi.logistics.entity.pojo.OrganizationRelation;
 import com.tiandi.logistics.entity.pojo.User;
 import com.tiandi.logistics.entity.result.ResultMap;
+import com.tiandi.logistics.service.OrganizationRelationService;
 import com.tiandi.logistics.service.UserService;
 import com.tiandi.logistics.utils.Md5Encoding;
 import com.tiandi.logistics.utils.MinioUtil;
 import com.tiandi.logistics.utils.RedisUtil;
 import com.tiandi.logistics.utils.SMSSendingUtil;
 import io.swagger.annotations.*;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +48,8 @@ public class UserRegisterController {
     private AsyncMailTask mailTask;
     @Autowired
     private UserService userService;
+    @Autowired
+    private OrganizationRelationService relationService;
 
     /**
      * 电话校验正则表达式
@@ -65,8 +70,9 @@ public class UserRegisterController {
     @ApiOperation(value = "用户注册接口",notes = "继承普通用户注册及公司内部添加员工方法为一体\n利用缺省的空值作为判断依据")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "user", value = "User实体类JSON字符串", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "icon", value = "用户头像", paramType = "query", dataType = "MultipartFile"),
-            @ApiImplicitParam(name = "code", value = "六位验证码，用于手机号注册用户使用", paramType = "query", dataType = "String")
+            @ApiImplicitParam(name = "icon", value = "用户头像", paramType = "query", dataType = "File"),
+            @ApiImplicitParam(name = "code", value = "六位验证码，用于手机号注册用户使用", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "organization", value = "用户所属组织", paramType = "query", dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "登陆成功！"),
@@ -74,7 +80,8 @@ public class UserRegisterController {
     })
     public ResultMap register(@RequestParam("user") String userStr,
                               @RequestParam(value = "icon", required = false) MultipartFile file,
-                              @RequestParam(value = "code", required = false) String code) {
+                              @RequestParam(value = "code", required = false) String code,
+                              @RequestParam(value = "organization", required = false) String organization) {
         //判空，防止抛出异常
         if (userStr == null || "".equals(userStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");
@@ -110,6 +117,7 @@ public class UserRegisterController {
         //判断是否有用户头像的输入
         if (file != null) {
             user.setIcon(MinioUtil.getInstance().upLoadMultipartFile(file));
+            file = null;
             //插入操作
             insert = userService.save(user);
         } else {
@@ -122,6 +130,10 @@ public class UserRegisterController {
                 redisUtil.del(user.getPhone() + "TP");
                 return resultMap.success().message("注册成功！");
             } else {
+                OrganizationRelation relation = new OrganizationRelation();
+                relation.setOrganization(organization);
+                relation.setUser_id(user.getIdTbUser());
+                relationService.save(relation);
                 //Reds保存(UUID，userID)键值对
                 redisUtil.set(userUUID, user.getIdTbUser(), 60 * 60 * 24);
                 //异步提交激活邮件发送请求
