@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tiandi.logistics.entity.front.LineInfoFront;
 import com.tiandi.logistics.entity.pojo.LineInfo;
 import com.tiandi.logistics.mapper.LineInfoMapper;
 import com.tiandi.logistics.service.LineInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 /**
@@ -61,5 +64,11 @@ public class LineInfoServiceImpl extends ServiceImpl<LineInfoMapper, LineInfo> i
         condition.eq("id_line",idLine);
         int delete = lineInfoMapper.delete(condition);
         return delete;
+    }
+
+    @Override
+    public List<LineInfoFront> getRoadMap() {
+        List<LineInfoFront> roadsList = lineInfoMapper.getRoadMap();
+        return roadsList;
     }
 }

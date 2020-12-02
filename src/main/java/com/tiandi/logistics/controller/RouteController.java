@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
+import com.tiandi.logistics.entity.front.LineInfoFront;
 import com.tiandi.logistics.entity.pojo.LineInfo;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.LineInfoService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author kotori
@@ -125,5 +128,15 @@ public class RouteController {
             resultMap.fail().message("删除失败");
         }
         return resultMap;
+    }
+
+    @GetMapping("/getRoadMap")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "路线查询成功！"),
+            @ApiResponse(code = 50011, message = "路线查询失败，请重试！")
+    })
+    public ResultMap getRoadMap(){
+        List<LineInfoFront> roadMap = lineInfoService.getRoadMap();
+        return resultMap.addElement("data",roadMap).success();
     }
 }
