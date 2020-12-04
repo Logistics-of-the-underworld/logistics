@@ -22,6 +22,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -83,9 +84,16 @@ public class ControllerLogAspect {
         String methodName = signature.getName();
         String ip = IpUtil.getIpAddr(request);
         String url = request.getRequestURI();
-        String param = getParams(joinPoint);
+        String param = null;
+        if ("com.tiandi.logistics.controller.UserRegisterController.register()".equals(className + "." + methodName + "()")) {
+             param = Arrays.toString(joinPoint.getArgs());
+        } else {
+            param = getParams(joinPoint);
+        }
 
         sysBusinessLog.setResult(result.get("message").toString());
+
+        log.info("3");
 
         sysBusinessLog.setOperationTime(LocalDateTime.now());
         sysBusinessLog.setRequestUrl(url + "&"+ param);

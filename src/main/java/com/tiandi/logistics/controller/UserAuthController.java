@@ -5,9 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
+import com.tiandi.logistics.entity.pojo.Company;
+import com.tiandi.logistics.entity.pojo.OrganizationRelation;
 import com.tiandi.logistics.entity.pojo.Role;
 import com.tiandi.logistics.entity.pojo.User;
 import com.tiandi.logistics.entity.result.ResultMap;
+import com.tiandi.logistics.service.CompanyService;
+import com.tiandi.logistics.service.OrganizationRelationService;
 import com.tiandi.logistics.service.RoleService;
 import com.tiandi.logistics.service.UserService;
 import com.tiandi.logistics.utils.JWTUtil;
@@ -51,6 +55,8 @@ public class UserAuthController {
     private RoleService roleService;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private OrganizationRelationService relationService;
 
     /**
      * 邮箱校验正则表达式
@@ -211,7 +217,7 @@ public class UserAuthController {
      * @param token 凭证
      * @return
      */
-    @GetMapping("/getInf")
+    @PostMapping("/getInf")
     @ApiOperation(value = "前端授权信息获取接口")
     @ApiImplicitParam(name = "token", value = "用户登陆凭证", required = true, paramType = "header", dataType = "String")
     @ApiResponse(code = 40000, message = "认证信息返回")
@@ -224,10 +230,21 @@ public class UserAuthController {
         User user = userService.getOne(wrapper);
 
         String roleJSON = JWTUtil.getRoleJSON(token);
-        String replace = roleJSON.replace("\"", "'");
+
+        String userRole = JWTUtil.getUserRole(token);
+
+        if ("user".equals(userRole)) {
+            resultMap.addElement("orgName",user.getPetname() + "  用户  欢迎您");
+        } else if ("admin".equals(userRole)){
+            resultMap.addElement("orgName","欢迎登陆管理员主界面");
+        } else {
+            String organization = relationService.getOne(
+                    new QueryWrapper<OrganizationRelation>().eq("user_id", user.getIdTbUser())).getOrganization();
+            resultMap.addElement("orgName", organization);
+        }
 
         resultMap.success().addElement("username", user.getUsername()).addElement("email", user.getEmail())
-                .addElement("phone", user.getPhone()).addElement("role", replace)
+                .addElement("phone", user.getPhone()).addElement("role", roleJSON).addElement("icon",user.getIcon())
                 .addElement("petName", user.getPetname()).message("认证信息返回");
 
         return resultMap;

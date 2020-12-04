@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    @author Yue Wu
+    @since 2020/12/2
+ -->
+<mapper namespace="com.tiandi.logistics.mapper.UserMapper">
+
+    <resultMap id="AuthManageMap" type="com.tiandi.logistics.entity.result.AuthManageEntity">
+        <id property="idTbUser" column="id_tb_user"/>
+        <result property="username" column="username"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="petname" column="petname"/>
+        <result property="icon" column="icon"/>
+        <result property="ban" column="ban"/>
+        <association property="role" javaType="com.tiandi.logistics.entity.pojo.Role">
+            <id property="idTbRole" column="id_tb_role"/>
+            <result property="role" column="role"/>
+            <result property="permission" column="permission"/>
+        </association>
+    </resultMap>
+
+    <select id="getAllAuth" resultMap="AuthManageMap">
+        SELECT u.id_tb_user,u.username,u.email,u.phone,u.petname,u.icon,u.ban,r.id_tb_role,r.role,r.permission
+        FROM
+        ( SELECT
+        id_tb_user,username,email,phone,petname,icon,role,ban
+        FROM tp_user
+        <where>
+            <foreach collection="roleId" item="roleId">
+                AND role != #{roleId}
+            </foreach>
+        </where>
+        ) AS u LEFT JOIN tp_role AS r ON u.role = r.id_tb_role
+    </select>
+
+    <select id="getAuthByOrganization" resultMap="AuthManageMap">
+        SELECT tpu.id_tb_user,tpu.username,tpu.email,tpu.phone,tpu.petname,tpu.icon,tpu.ban,tpr.role,tpr.permission
+        FROM tp_organization_relation AS tor LEFT JOIN tp_user AS tpu ON tor.user_id = tpu.id_tb_user
+        INNER JOIN tp_role AS tpr ON tpr.id_tb_role = tpu.role
+        WHERE tor.organization = #{organization}
+        AND tpu.role IN
+        <foreach collection="role" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND tpu.is_delete = #{delete}
+    </select>
+
+    <select id="getAuthByOrganizationOnType" resultMap="AuthManageMap">
+        SELECT tpu.id_tb_user,tpu.username,tpu.email,tpu.phone,tpu.petname,tpu.icon,tpu.ban,tpr.role,tpr.permission
+        FROM tp_organization_relation AS tor LEFT JOIN tp_user AS tpu ON tor.user_id = tpu.id_tb_user
+        INNER JOIN tp_role AS tpr ON tpr.id_tb_role = tpu.role
+        WHERE tor.organization = #{organization}
+        AND tpu.role IN
+        <foreach collection="role" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND tpu.is_delete = #{delete}
+        AND tpr.permission = #{type}
+    </select>
+
+    <select id="getAllConsumerAuth" resultMap="AuthManageMap">
+        SELECT tpu.username,tpu.email,tpu.phone,tpu.petname,tpu.icon,tpu.ban,tpr.role,tpr.permission
+        FROM tp_user AS tpu
+        INNER JOIN tp_role AS tpr ON tpr.id_tb_role = tpu.role
+        AND tpu.role IN (1,2)
+        AND tpu.is_delete = 0
+    </select>
+</mapper>

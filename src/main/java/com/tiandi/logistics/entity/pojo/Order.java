@@ -36,6 +36,9 @@ public class Order extends BaseEntity {
     @ApiModelProperty(value = "配送点编码")
     private Integer idDistribution;
 
+    @ApiModelProperty(value = "用户名")
+    private String username;
+
     @ApiModelProperty(value = "条形码")
     private String barCodeUrl;
 
