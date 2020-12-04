@@ -8,6 +8,7 @@ import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.pojo.DistributionRange;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.DistributionRangeService;
+import com.tiandi.logistics.utils.JWTUtil;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,41 +29,46 @@ public class DistributionRangeController {
     @Autowired
     private DistributionRangeService distributionRangeService;
 
-    @PostMapping("/getAllDistributionRange")
+    @PostMapping("/getAllDistributionRange/{name_company}")
     @ControllerLogAnnotation(remark = "查询所有配送范围信息",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
     @ApiOperation(value = "获取配送范围信息接口",notes = "当前配送范围的配送范围编码、配送点编码、范围名称、创建时间、备注等信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "name_company", value = "所属公司", paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "role",value = "身份",required = true,paramType = "query",dataType = "String"),
-            @ApiImplicitParam(name = "permission",value = "权限",required = true,paramType = "query",dataType = "String"),
-            @ApiImplicitParam(name = "id_distribution",value = "配送点编码",paramType = "query",dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "配送范围信息查询成功！"),
             @ApiResponse(code = 50011, message = "配送范围信息查询失败，请重试！")
     })
-    public ResultMap getAllDistributionRange(@RequestParam(value = "name_company",required = false) String name_company,
-                                             @RequestParam("role") String role,
-                                             @RequestParam String permission,
-                                             @RequestParam(value = "id_distribution",required = false) String id_distribution){
+    public ResultMap getAllDistributionRange(@RequestHeader String token,@PathVariable(value = "name_company",required = false) String name_company){
+        String permission = JWTUtil.getUserPermission(token);
+        String role = JWTUtil.getUserRole(token);
+
         if (permission.equals("root") && role.equals("admin")){
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>());
             String distributionRangesList = JSON.toJSONString(distributionRanges);
             resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList",distributionRangesList);
+            return resultMap;
         }else if (permission.equals("admin") && role.equals("distribution") && name_company != null){
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>().eq("name_company", name_company));
             String distributionRangesList = JSON.toJSONString(distributionRanges);
             resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList",distributionRangesList);
-        }else if (permission.equals("admin") && role.equals("distribution") && id_distribution != null){
+            return resultMap;
+        }
+        return resultMap.fail();
+    }
+
+    @GetMapping("/getAllDistributionRangeByID/{id_distribution")
+    public ResultMap getAllDistributionRangeByID(@RequestHeader String token,@PathVariable("id_distribution") String id_distribution){
+        String permission = JWTUtil.getUserPermission(token);
+        String role = JWTUtil.getUserRole(token);
+
+        if (permission.equals("admin") && role.equals("distribution") && id_distribution != null) {
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>().eq("id_distribution", id_distribution));
             String distributionRangesList = JSON.toJSONString(distributionRanges);
-            resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList",distributionRangesList);
-        }else if (name_company == null && id_distribution == null){
-            resultMap.fail().code(50011).message("查询配送范围失败!");
-        }else {
-            resultMap.fail().code(50011).message("查询配送范围失败!");
+            resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList", distributionRangesList);
+            return resultMap;
         }
-        return resultMap;
+        return resultMap.fail();
     }
 
     @PostMapping("/updateDistributionRange")
@@ -82,7 +88,7 @@ public class DistributionRangeController {
             resultMap.fail().code(40010).message("服务器内部错误!");
         }
         DistributionRange distributionRange1 = JSON.parseObject(distributionRange, DistributionRange.class);
-        distributionRange1.setIdDistribution(Integer.valueOf(id_range));
+
         int i = distributionRangeService.updatedistributionRange(distributionRange1);
         if (i == 1){
             resultMap.success().message("配送范围更新成功！");
