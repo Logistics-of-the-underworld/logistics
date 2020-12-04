@@ -8,6 +8,7 @@ import com.tiandi.logistics.entity.front.LineInfoFront;
 import com.tiandi.logistics.entity.pojo.LineInfo;
 import com.tiandi.logistics.mapper.LineInfoMapper;
 import com.tiandi.logistics.service.LineInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * @since 2020-12-2
  */
 @Service
+@Slf4j
 public class LineInfoServiceImpl extends ServiceImpl<LineInfoMapper, LineInfo> implements LineInfoService {
     @Autowired
     private LineInfoMapper lineInfoMapper;
@@ -69,6 +71,10 @@ public class LineInfoServiceImpl extends ServiceImpl<LineInfoMapper, LineInfo> i
     @Override
     public List<LineInfoFront> getRoadMap() {
         List<LineInfoFront> roadsList = lineInfoMapper.getRoadMap();
+        for (LineInfoFront l : roadsList
+             ) {
+            System.out.println(l.toString());
+        }
         return roadsList;
     }
 }
