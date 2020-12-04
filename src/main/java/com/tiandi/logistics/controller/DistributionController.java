@@ -41,7 +41,7 @@ public class DistributionController {
      * 根据身份及权限查询配送点所有信息
      * @return
      */
-    @GetMapping("/getAllDistribution/{{name_company}}")
+    @GetMapping("/getAllDistribution/{name_company}")
     @ApiOperation(value = "获取配送点信息接口",notes = "当前配送点信息包括配送点的编码和名称、管理员代码和姓名、管理员\t口令、确认口令以及上行站点和下行站点等")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "name_company", value = "所属公司", paramType = "query", dataType = "String"),
