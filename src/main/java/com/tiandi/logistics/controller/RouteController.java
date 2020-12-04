@@ -31,7 +31,6 @@ public class RouteController {
     private LineInfoService lineInfoService;
 
     @PostMapping("/getAllRoute")
-    @ControllerLogAnnotation(remark = "路线获取功能", sysType = SysTypeEnum.ADMIN, opType = OpTypeEnum.SELECT)
     @ApiOperation(value = "路线获取接口",notes = "通过页码、页数、起始站点、终点站点、路线ID多条件查询")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页码", required = true, paramType = "query", dataType = "int"),
@@ -52,7 +51,7 @@ public class RouteController {
         final IPage allRoute = lineInfoService.getAllRoute(page, limit, start_distribution, end_distribution, id_line);
         resultMap.addElement("data",allRoute.getRecords());
         resultMap.addElement("total",allRoute.getTotal());
-        resultMap.success().message("查询成功");
+        resultMap.success();
         return resultMap;
     }
 

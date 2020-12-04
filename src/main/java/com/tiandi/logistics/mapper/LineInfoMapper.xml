@@ -2,10 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tiandi.logistics.mapper.LineInfoMapper">
     <resultMap id="raodResultMap" type="com.tiandi.logistics.entity.front.LineInfoFront">
-        <result property="startDistribution" column="startspot" />
-        <result property="endDistribution" column="endspot" />
+        <result property="startDistribution" column="startSpot" />
+        <result property="endDistribution" column="endSpot" />
         <result property="startLongitude" column="start_longitude" />
-
         <result property="startLatitude" column="start_latitude" />
         <result property="endLongitude" column="end_longitude" />
         <result property="endLatitude" column="end_latitude" />
@@ -13,9 +12,8 @@
 
     <select id="getRoadMap" resultType="com.tiandi.logistics.entity.front.LineInfoFront">
         SELECT
-        start_longitude,start_latitude,end_longitude,end_latitude,d1.name_distribution as startspot, d2.name_distribution as endspot
+        start_longitude,start_latitude,end_longitude,end_latitude,startSpot,endSpot
         from
-        (tp_distribution as d1 right join tp_line_info on d1.id_distribution = tp_line_info.start_distribution)
-        left join tp_distribution as d2 on tp_line_info.end_distribution = d2.id_distribution;
+        view_road_map
     </select>
 </mapper>
