@@ -93,6 +93,9 @@ public class Order extends BaseEntity {
     @ApiModelProperty(value = "审核人")
     private String reviewer;
 
+    @ApiModelProperty(value = "用户评价")
+    private Integer importance;
+
     @ApiModelProperty(value = "逻辑删除")
     private Integer isDelete;
 

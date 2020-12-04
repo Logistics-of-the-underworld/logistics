@@ -36,10 +36,10 @@ public class OrderController {
     @ControllerLogAnnotation(remark = "订单获取",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
     @ApiOperation(value = "订单获取",notes = "通过页码、页数、收寄地、配送地、客户姓名、订单状态、查询时段任一条件查询")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "sender_address", value = "收寄地", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "id_distribution", value = "配送地ID", required = true, paramType = "query", dataType = "Integer"),
-            @ApiImplicitParam(name = "receiver_name", value = "客户姓名", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "state_order", value = "订单状态", required = true, paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "receiverAddress", value = "收寄地", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "idDistribution", value = "配送地ID", required = true, paramType = "query", dataType = "Integer"),
+            @ApiImplicitParam(name = "receiverName", value = "客户姓名", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "stateOrder", value = "订单状态", required = true, paramType = "query", dataType = "Integer"),
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "订单查询成功！"),
@@ -47,11 +47,11 @@ public class OrderController {
     })
     public ResultMap getAllOrder(@RequestParam(value = "page", required = true) int page,
                                  @RequestParam(value = "limit", required = true) int limit,
-                                 @RequestParam(value = "receiver_address",required = false) String receiver_address,
-                                 @RequestParam(value = "id_distribution",required = false) Integer id_distribution,
-                                 @RequestParam(value = "receiver_name",required = false) String receiver_name,
-                                 @RequestParam(value = "state_order",required = false) Integer state_order){
-        final IPage allOrder = orderService.getAllOrder(page, limit, receiver_address, id_distribution, receiver_name, state_order);
+                                 @RequestParam(value = "receiverAddress",required = false) String receiverAddress,
+                                 @RequestParam(value = "idDistribution",required = false) Integer idDistribution,
+                                 @RequestParam(value = "receiverName",required = false) String receiverName,
+                                 @RequestParam(value = "stateOrder",required = false) Integer stateOrder){
+        final IPage allOrder = orderService.getAllOrder(page, limit, receiverAddress, idDistribution, receiverName, stateOrder);
         resultMap.addElement("data",allOrder.getRecords());
         resultMap.addElement("total",allOrder.getTotal());
         resultMap.success().message("查询成功");
@@ -100,10 +100,7 @@ public class OrderController {
             @ApiResponse(code = 40000, message = "订单更新成功！"),
             @ApiResponse(code = 50011, message = "订单更新失败，请重试！")
     })
-    public ResultMap updateOrder(
-                                 @RequestParam(value = "order", required = false) String orderStr
-                                 ){
-
+    public ResultMap updateOrder(@RequestParam(value = "order") String orderStr){
         //判空，防止抛出异常
         if (orderStr == null || "".equals(orderStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");
