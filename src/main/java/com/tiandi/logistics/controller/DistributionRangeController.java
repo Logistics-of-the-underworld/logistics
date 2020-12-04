@@ -75,15 +75,13 @@ public class DistributionRangeController {
     @ControllerLogAnnotation(remark = "配送范围更新功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.UPDATE)
     @ApiOperation(value = "配送范围更新接口", notes = "根据配送范围编码更新路线信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "idRange",value = "配送范围编码",required = true,paramType = "query",dataType = "String"),
-            @ApiImplicitParam(name = "distributionRange",value = "配送范围对象",required = true,paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "distributionRange",value = "配送范围对象",required = true,paramType = "query",dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "配送范围更新成功！"),
             @ApiResponse(code = 50011, message = "配送范围更新失败，请重试！")
     })
-    public ResultMap updateDistributionRange(@RequestParam("idRange") String id_range,
-                                             @RequestParam("distributionRange") String distributionRange){
+    public ResultMap updateDistributionRange(@RequestParam("distributionRange") String distributionRange){
         if (distributionRange == null || "".equals(distributionRange)){
             resultMap.fail().code(40010).message("服务器内部错误!");
         }
