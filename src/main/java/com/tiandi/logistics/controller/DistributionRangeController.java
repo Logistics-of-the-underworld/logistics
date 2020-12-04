@@ -29,17 +29,17 @@ public class DistributionRangeController {
     @Autowired
     private DistributionRangeService distributionRangeService;
 
-    @PostMapping("/getAllDistributionRange/{name_company}")
+    @PostMapping("/getAllDistributionRange/{nameCompany}")
     @ControllerLogAnnotation(remark = "查询所有配送范围信息",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
     @ApiOperation(value = "获取配送范围信息接口",notes = "当前配送范围的配送范围编码、配送点编码、范围名称、创建时间、备注等信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "name_company", value = "所属公司", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "nameCompany", value = "所属公司", paramType = "query", dataType = "String"),
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "配送范围信息查询成功！"),
             @ApiResponse(code = 50011, message = "配送范围信息查询失败，请重试！")
     })
-    public ResultMap getAllDistributionRange(@RequestHeader String token,@PathVariable(value = "name_company",required = false) String name_company){
+    public ResultMap getAllDistributionRange(@RequestHeader String token,@PathVariable(value = "nameCompany",required = false) String name_company){
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
 
@@ -57,8 +57,8 @@ public class DistributionRangeController {
         return resultMap.fail();
     }
 
-    @GetMapping("/getAllDistributionRangeByID/{id_distribution")
-    public ResultMap getAllDistributionRangeByID(@RequestHeader String token,@PathVariable("id_distribution") String id_distribution){
+    @GetMapping("/getAllDistributionRangeByID/{idDistribution")
+    public ResultMap getAllDistributionRangeByID(@RequestHeader String token,@PathVariable("idDistribution") String id_distribution){
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
 
@@ -75,14 +75,14 @@ public class DistributionRangeController {
     @ControllerLogAnnotation(remark = "配送范围更新功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.UPDATE)
     @ApiOperation(value = "配送范围更新接口", notes = "根据配送范围编码更新路线信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id_range",value = "配送范围编码",required = true,paramType = "query",dataType = "String"),
+            @ApiImplicitParam(name = "idRange",value = "配送范围编码",required = true,paramType = "query",dataType = "String"),
             @ApiImplicitParam(name = "distributionRange",value = "配送范围对象",required = true,paramType = "query",dataType = "String"),
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "配送范围更新成功！"),
             @ApiResponse(code = 50011, message = "配送范围更新失败，请重试！")
     })
-    public ResultMap updateDistributionRange(@RequestParam("id_range") String id_range,
+    public ResultMap updateDistributionRange(@RequestParam("idRange") String id_range,
                                              @RequestParam("distributionRange") String distributionRange){
         if (distributionRange == null || "".equals(distributionRange)){
             resultMap.fail().code(40010).message("服务器内部错误!");
@@ -102,13 +102,13 @@ public class DistributionRangeController {
     @ControllerLogAnnotation(remark = "配送范围删除功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.DELETE)
     @ApiOperation(value = "配送范围删除接口",notes = "根据配送范围编码删除配送范围")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id_range",value = "配送范围编码",required = true,dataType = "String")
+            @ApiImplicitParam(name = "idRange",value = "配送范围编码",required = true,dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "删除配送范围成功！"),
             @ApiResponse(code = 50011, message = "删除配送范围失败，请重试！")
     })
-    public ResultMap deleteDistributionRange(@RequestParam("id_range") String id_range){
+    public ResultMap deleteDistributionRange(@RequestParam("idRange") String id_range){
         if (id_range == null || "".equals(id_range)){
             return resultMap.fail().code(40010).message("服务器内部错误!");
         }
