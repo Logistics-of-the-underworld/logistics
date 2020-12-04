@@ -13,19 +13,16 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
- * 订单管理控制层接口
- *
- * @author ZhanTianYi
+ * @author kotori
  * @version 1.0
- * @since 2020/12/1 19:43
+ * @date 2020/12/4 20:15
+ * @description 用户订单查询
  */
 @RestController
-@RequestMapping("/order")
-@Api(tags = "订单管理")
-public class OrderController {
+@RequestMapping("/orderUser")
+@Api(tags = "用户订单查询")
+public class OrderCustomerController {
 
     @Autowired
     private ResultMap resultMap;
@@ -34,24 +31,26 @@ public class OrderController {
 
     @PostMapping("/getAllOrder")
     @ControllerLogAnnotation(remark = "订单获取",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
-    @ApiOperation(value = "订单获取",notes = "通过页码、页数、收寄地、配送地、收件人姓名，订单状态任一条件查询")
+    @ApiOperation(value = "订单获取",notes = "通过页码、页数、收寄地、用户评价、订单状态")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "receiverAddress", value = "收寄地", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "idDistribution", value = "配送地", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "receiverName", value = "收件人姓名", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "importance", value = "用户评价", required = true, paramType = "query", dataType = "Integer"),
             @ApiImplicitParam(name = "stateOrder", value = "订单状态", required = true, paramType = "query", dataType = "Integer"),
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "订单查询成功！"),
             @ApiResponse(code = 50011, message = "订单查询失败，请重试！")
     })
-    public ResultMap getAllOrder(@RequestParam(value = "page", required = true) int page,
-                                 @RequestParam(value = "limit", required = true) int limit,
-                                 @RequestParam(value = "receiverAddress",required = false) String receiverAddress,
-                                 @RequestParam(value = "senderAddress",required = false) String senderAddress,
-                                 @RequestParam(value = "receiverName",required = false) String receiverName,
-                                 @RequestParam(value = "stateOrder",required = false) Integer stateOrder){
-        final IPage allOrder = orderService.getAllOrder(page, limit, receiverAddress, senderAddress, receiverName, stateOrder);
+    public ResultMap getAllOrder(
+            @RequestHeader String token,
+            @RequestParam(value = "page", required = true) int page,
+            @RequestParam(value = "limit", required = true) int limit,
+            @RequestParam(value = "receiverAddress",required = false) String receiverAddress,
+            @RequestParam(value = "importance",required = false) Integer importance,
+            @RequestParam(value = "stateOrder",required = false) Integer stateOrder){
+        String username = JWTUtil.getUsername(token);
+        System.out.println(username);
+        final IPage allOrder = orderService.getAllOrder(page, limit, receiverAddress, importance, stateOrder,username);
         resultMap.addElement("data",allOrder.getRecords());
         resultMap.addElement("total",allOrder.getTotal());
         resultMap.success().message("查询成功");
@@ -136,16 +135,4 @@ public class OrderController {
         }
         return resultMap;
     }
-
-//    @PostMapping("/confirmOrder")
-//    @ApiResponses({
-//            @ApiResponse(code = 40000, message = "订单确认成功！"),
-//            @ApiResponse(code = 50011, message = "订单确认失败，请重试！")
-//    })
-//    public ResultMap confirmOrder(){
-//        List<Order> stateOrder = orderService.getStateOrder();
-//        return resultMap.addElement("data",stateOrder).success();
-//    }
-
-
 }

@@ -15,5 +15,4 @@ import java.util.List;
  * @since 2020-11-25
  */
 public interface OrderMapper extends BaseMapper<Order> {
-    List<Order> getStateOrder();
 }

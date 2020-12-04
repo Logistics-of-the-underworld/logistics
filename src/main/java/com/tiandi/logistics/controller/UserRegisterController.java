@@ -11,10 +11,7 @@ import com.tiandi.logistics.entity.pojo.User;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.OrganizationRelationService;
 import com.tiandi.logistics.service.UserService;
-import com.tiandi.logistics.utils.Md5Encoding;
-import com.tiandi.logistics.utils.MinioUtil;
-import com.tiandi.logistics.utils.RedisUtil;
-import com.tiandi.logistics.utils.SMSSendingUtil;
+import com.tiandi.logistics.utils.*;
 import io.swagger.annotations.*;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +78,8 @@ public class UserRegisterController {
     public ResultMap register(@RequestParam("user") String userStr,
                               @RequestParam(value = "icon", required = false) MultipartFile file,
                               @RequestParam(value = "code", required = false) String code,
-                              @RequestParam(value = "organization", required = false) String organization) {
+                              @RequestParam(value = "organization", required = false) String organization,
+                              @RequestHeader(required = false) String token) {
         //判空，防止抛出异常
         if (userStr == null || "".equals(userStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");
@@ -113,6 +111,14 @@ public class UserRegisterController {
             user.setBan(1);
         } else {
             user.setBan(0);
+        }
+        if (token != null) {
+            String userRole = JWTUtil.getUserRole(token);
+            if ("branchCompany".equals(userRole)) {
+                user.setRole(8);
+            } else if ("headCompany".equals(userRole)) {
+                user.setRole(10);
+            }
         }
         //判断是否有用户头像的输入
         if (file != null) {
@@ -208,7 +214,7 @@ public class UserRegisterController {
         if (userService.count(new QueryWrapper<User>().eq("username", username)) < 1) {
             return resultMap.success().message("可用");
         }
-        return resultMap.success().code(50013).message("已被使用");
+        return resultMap.fail().message("已被使用");
     }
 
     /**
@@ -228,7 +234,7 @@ public class UserRegisterController {
         if (userService.count(new QueryWrapper<User>().eq("email", email)) < 1) {
             return resultMap.success().message("可用");
         }
-        return resultMap.success().code(50013).message("已被使用");
+        return resultMap.fail().message("已被使用");
     }
 
     /**
@@ -248,6 +254,6 @@ public class UserRegisterController {
         if (userService.count(new QueryWrapper<User>().eq("phone", phone)) < 1) {
             return resultMap.success().message("可用");
         }
-        return resultMap.success().code(50013).message("已被使用");
+        return resultMap.fail().message("已被使用");
     }
 }

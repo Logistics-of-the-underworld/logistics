@@ -1,12 +1,8 @@
 package com.tiandi.logistics.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.tiandi.logistics.entity.pojo.LineInfo;
 import com.tiandi.logistics.entity.pojo.Order;
-
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -24,14 +20,23 @@ public interface OrderService extends IService<Order> {
      * @param page 页码
      * @param limit 页数
      * @param receiver_address 收件人地址
-     * @param id_distribution 配送地ID
+     * @param senderAddress 配送地
      * @param receiver_name 客户姓名
      * @param state_order 订单状态
      * @return
      */
-    IPage getAllOrder(int page, int limit, String receiver_address, Integer id_distribution, String receiver_name, Integer state_order);
+    IPage getAllOrder(int page, int limit, String receiver_address, String senderAddress, String receiver_name, Integer state_order);
 
-
+    /**
+     * 用户的分页查询
+     * @param page
+     * @param limit
+     * @param receiverAddress
+     * @param importance
+     * @param stateOrder
+     * @return
+     */
+    IPage getAllOrder(int page, int limit, String receiverAddress, Integer importance, Integer stateOrder, String username);
     /**
      * 添加订单
      * @param order 订单实体类
