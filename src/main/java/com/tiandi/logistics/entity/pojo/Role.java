@@ -32,5 +32,7 @@ public class Role {
     @ApiModelProperty(value = "权限")
     private String permission;
 
+    @ApiModelProperty(value = "权限组描述")
+    private String note;
 
 }

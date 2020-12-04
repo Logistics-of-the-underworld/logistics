@@ -25,6 +25,7 @@ public class ResultMap extends HashMap<String, Object> {
 
     public ResultMap fail() {
         this.put("status", "fail");
+        this.code(20000);
         return this;
     }
 

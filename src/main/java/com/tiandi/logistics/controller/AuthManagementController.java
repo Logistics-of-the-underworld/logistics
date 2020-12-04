@@ -59,6 +59,7 @@ public class AuthManagementController {
      * @return
      */
     @PostMapping("/deleteAtuh")
+    @ControllerLogAnnotation(remark = "对用户进行删除/开除/离职进行处理", sysType = SysTypeEnum.ADMIN, opType = OpTypeEnum.DELETE)
     @ApiOperation(value = "对用户进行删除/开除/离职进行处理", notes = "该方法底层实现为逻辑删除")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetUsername", value = "修改的目标用户用户名", required = true, paramType = "query"),
@@ -67,7 +68,8 @@ public class AuthManagementController {
     })
     @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin"})
     @RequiresPermissions(logical = Logical.OR, value = {"admin", "normal", "root"})
-    public ResultMap deleteAuth(@RequestHeader String token, @RequestParam String targetUsername, @RequestParam String note) {
+    public ResultMap deleteAuth(@RequestHeader String token, @RequestParam("targetUsername") String targetUsername,
+                                @RequestParam("note") String note) {
         boolean remove = userService.remove(new QueryWrapper<User>().eq("username", targetUsername));
 
         if (remove) {
