@@ -29,7 +29,7 @@ public class DistributionRangeController {
     @Autowired
     private DistributionRangeService distributionRangeService;
 
-    @PostMapping("/getAllDistributionRange/{nameCompany}")
+    @GetMapping("/getAllDistributionRange/{nameCompany}")
     @ControllerLogAnnotation(remark = "查询所有配送范围信息",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
     @ApiOperation(value = "获取配送范围信息接口",notes = "当前配送范围的配送范围编码、配送点编码、范围名称、创建时间、备注等信息")
     @ApiImplicitParams({
@@ -44,14 +44,12 @@ public class DistributionRangeController {
         String role = JWTUtil.getUserRole(token);
 
         if (permission.equals("root") && role.equals("admin")){
-            List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>());
-            String distributionRangesList = JSON.toJSONString(distributionRanges);
-            resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList",distributionRangesList);
+            List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(null);
+            resultMap.success().message("查询配送范围成功！").addElement("data",distributionRanges);
             return resultMap;
         }else if (permission.equals("admin") && role.equals("distribution") && name_company != null){
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>().eq("name_company", name_company));
-            String distributionRangesList = JSON.toJSONString(distributionRanges);
-            resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList",distributionRangesList);
+            resultMap.success().message("查询配送范围成功！").addElement("data",distributionRanges);
             return resultMap;
         }
         return resultMap.fail();
@@ -65,7 +63,7 @@ public class DistributionRangeController {
         if (permission.equals("admin") && role.equals("distribution") && id_distribution != null) {
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>().eq("id_distribution", id_distribution));
             String distributionRangesList = JSON.toJSONString(distributionRanges);
-            resultMap.success().message("查询配送范围成功！").addElement("distributionRangesList", distributionRangesList);
+            resultMap.success().message("查询配送范围成功！").addElement("data", distributionRangesList);
             return resultMap;
         }
         return resultMap.fail();
@@ -96,7 +94,7 @@ public class DistributionRangeController {
         return resultMap;
     }
 
-    @GetMapping("/deleteDistributionRange")
+    @GetMapping("/deleteDistributionRange/{idRange}")
     @ControllerLogAnnotation(remark = "配送范围删除功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.DELETE)
     @ApiOperation(value = "配送范围删除接口",notes = "根据配送范围编码删除配送范围")
     @ApiImplicitParams({
@@ -106,7 +104,7 @@ public class DistributionRangeController {
             @ApiResponse(code = 40000, message = "删除配送范围成功！"),
             @ApiResponse(code = 50011, message = "删除配送范围失败，请重试！")
     })
-    public ResultMap deleteDistributionRange(@RequestParam("idRange") String id_range){
+    public ResultMap deleteDistributionRange(@PathVariable("idRange") String id_range){
         if (id_range == null || "".equals(id_range)){
             return resultMap.fail().code(40010).message("服务器内部错误!");
         }

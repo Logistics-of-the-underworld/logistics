@@ -25,7 +25,7 @@ public class DistributionRangeServiceImpl extends ServiceImpl<DistributionRangeM
     @Override
     public int updatedistributionRange(DistributionRange distributionRange){
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("id_range",distributionRange.getIdDistribution());
+        queryWrapper.eq("id_range",distributionRange.getIdRange());
         int update = distributionRangeMapper.update(distributionRange, queryWrapper);
         return update;
     }
