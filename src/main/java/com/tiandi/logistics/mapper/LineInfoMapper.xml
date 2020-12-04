@@ -10,7 +10,7 @@
         <result property="endLatitude" column="end_latitude" />
     </resultMap>
 
-    <select id="getRoadMap" resultType="com.tiandi.logistics.entity.front.LineInfoFront">
+    <select id="getRoadMap" resultMap="raodResultMap">
         SELECT
         start_longitude,start_latitude,end_longitude,end_latitude,startSpot,endSpot
         from
