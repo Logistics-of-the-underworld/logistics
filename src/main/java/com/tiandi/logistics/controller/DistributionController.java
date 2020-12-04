@@ -50,7 +50,7 @@ public class DistributionController {
             @ApiResponse(code = 40000, message = "配送点信息查询成功！"),
             @ApiResponse(code = 50011, message = "配送点信息查询失败，请重试！")
     })
-    public ResultMap getAllDistribution(@RequestHeader String token,@PathVariable(value = "name_company",required = false) String name_company){
+    public ResultMap getAllDistribution(@RequestHeader String token,@PathVariable(value = "name_company") String name_company){
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
         if ("root".equals(permission) && "admin".equals(role)){
@@ -81,14 +81,13 @@ public class DistributionController {
     @ControllerLogAnnotation(remark = "配送点更新功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.UPDATE)
     @ApiOperation(value = "配送点更新接口", notes = "根据配送点编码更新路线信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id_distribution",value = "配送点编码",required = true,paramType = "query",dataType = "String"),
             @ApiImplicitParam(name = "distribution",value = "配送点对象",required = true,paramType = "query",dataType = "String"),
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "配送点更新成功！"),
             @ApiResponse(code = 50011, message = "配送点更新失败，请重试！")
     })
-    public ResultMap updateDistribution(@RequestParam("id_distribution") String id_distribution,@RequestParam("distribution") String distribution){
+    public ResultMap updateDistribution(@RequestParam("distribution") String distribution){
         if (distribution == null || "".equals(distribution)){
             resultMap.fail().code(40010).message("服务器内部错误!");
         }
@@ -130,7 +129,7 @@ public class DistributionController {
         return resultMap;
     }
 
-    @GetMapping("/deleteDistribution")
+    @GetMapping("/deleteDistribution/{idDistribution}")
     @ControllerLogAnnotation(remark = "删除配送点功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.DELETE)
     @ApiOperation(value = "删除配送点接口",notes = "根据配送点编码删除配送点")
     @ApiImplicitParams({
@@ -140,7 +139,7 @@ public class DistributionController {
             @ApiResponse(code = 40000, message = "删除配送点成功！"),
             @ApiResponse(code = 50011, message = "删除配送点失败，请重试！")
     })
-    public ResultMap deleteDistribution(@RequestParam("id_distribution") String id_distribution){
+    public ResultMap deleteDistribution(@PathVariable("idDistribution") String id_distribution){
         if (id_distribution == null || "".equals(id_distribution)){
             return resultMap.fail().code(40010).message("服务器内部错误!");
         }
