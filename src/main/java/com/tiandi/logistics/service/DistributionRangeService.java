@@ -13,4 +13,5 @@ import com.tiandi.logistics.entity.pojo.DistributionRange;
  */
 public interface DistributionRangeService extends IService<DistributionRange> {
 
+    int updatedistributionRange(DistributionRange distributionRange);
 }
