@@ -1,7 +1,10 @@
 package com.tiandi.logistics.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tiandi.logistics.entity.front.LineInfoFront;
 import com.tiandi.logistics.entity.pojo.Order;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,5 @@ import com.tiandi.logistics.entity.pojo.Order;
  * @since 2020-11-25
  */
 public interface OrderMapper extends BaseMapper<Order> {
-
+    List<Order> getStateOrder();
 }
