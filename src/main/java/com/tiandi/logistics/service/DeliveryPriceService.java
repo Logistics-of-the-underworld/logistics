@@ -13,4 +13,5 @@ import com.tiandi.logistics.entity.pojo.DeliveryPrice;
  */
 public interface DeliveryPriceService extends IService<DeliveryPrice> {
 
+    int updateDeliveryPrice(DeliveryPrice deliveryPrice);
 }
