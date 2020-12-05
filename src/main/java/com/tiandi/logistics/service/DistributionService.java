@@ -14,4 +14,5 @@ import com.tiandi.logistics.entity.pojo.Distribution;
 public interface DistributionService extends IService<Distribution> {
 
     int updatedistribution(Distribution distribution);
+
 }
