@@ -10,6 +10,7 @@ import com.tiandi.logistics.entity.pojo.DeliveryPriceRange;
 import com.tiandi.logistics.entity.pojo.Distribution;
 import com.tiandi.logistics.entity.pojo.DistributionRange;
 import com.tiandi.logistics.entity.result.ResultMap;
+import com.tiandi.logistics.mapper.DeliveryPriceMapper;
 import com.tiandi.logistics.service.DeliveryPriceRangeService;
 import com.tiandi.logistics.service.DeliveryPriceService;
 import com.tiandi.logistics.service.DistributionRangeService;
@@ -42,6 +43,8 @@ public class DeliveryPriceController {
     private DistributionRangeService distributionRangeService;
     @Autowired
     private DeliveryPriceRangeService deliveryPriceRangeService;
+    @Autowired
+    DeliveryPriceMapper deliveryPriceMapper;
 
 
     @GetMapping("/getAllDeliveryPrice/{nameCompany}")
@@ -170,7 +173,7 @@ public class DeliveryPriceController {
 
     @GetMapping("/deteleDeliveryPrice/{idDeliveryPrice}")
     @ControllerLogAnnotation(remark = "删除配送价格功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.DELETE)
-    @ApiOperation(value = "删除配送点接口",notes = "根据配送价格编码删除配送价格信息")
+    @ApiOperation(value = "删除配送价格接口",notes = "根据配送价格编码删除配送价格信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "idDeliveryPrice",value = "配送价格编码",required = true,dataType = "String")
     })
@@ -178,16 +181,21 @@ public class DeliveryPriceController {
             @ApiResponse(code = 40000, message = "删除配送价格成功！"),
             @ApiResponse(code = 50011, message = "删除配送价格失败，请重试！")
     })
-    public ResultMap deteleDeliveryPrice(@RequestParam("idDeliveryPrice") String id_delivery_price){
+    public ResultMap deteleDeliveryPrice(@PathVariable("idDeliveryPrice") String id_delivery_price){
         if (id_delivery_price == null || "".equals(id_delivery_price)){
             return resultMap.fail().code(40010).message("服务器内部错误!");
         }
-        int id_delivery_price1 = deliveryPriceService.getBaseMapper().delete(new QueryWrapper<DeliveryPrice>().eq("id_delivery_price", id_delivery_price));
-        if (id_delivery_price1 == 1){
+
+        QueryWrapper<DeliveryPrice> deliveryPriceQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<DeliveryPrice> id_delivery_price1 = deliveryPriceQueryWrapper.in("id_delivery_price", id_delivery_price);
+        int delete1 = deliveryPriceMapper.delete(id_delivery_price1);
+
+        if (delete1 == 1){
             resultMap.success().message("删除成功！");
         }else {
             resultMap.fail().message("删除失败！");
         }
+
         return resultMap;
     }
 }
