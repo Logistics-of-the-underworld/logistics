@@ -26,4 +26,11 @@ public class DemoTest {
         System.out.println("size: " + userList.getSize());
         System.out.println("total: " + userList.getTotal());
     }
+
+    @Test
+    public void test2() {
+        String line = "123456789";
+        CharSequence sequence = line.subSequence(line.length() - 6, line.length());
+        System.out.println(sequence.toString());
+    }
 }

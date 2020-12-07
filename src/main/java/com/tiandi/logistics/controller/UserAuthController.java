@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
+import com.tiandi.logistics.async.AsyncPhoneRegisterTask;
 import com.tiandi.logistics.entity.pojo.Company;
 import com.tiandi.logistics.entity.pojo.OrganizationRelation;
 import com.tiandi.logistics.entity.pojo.Role;
@@ -57,6 +58,8 @@ public class UserAuthController {
     private RedisUtil redisUtil;
     @Autowired
     private OrganizationRelationService relationService;
+    @Autowired
+    private AsyncPhoneRegisterTask registerTask;
 
     /**
      * 邮箱校验正则表达式
@@ -150,6 +153,12 @@ public class UserAuthController {
         Random random = new Random();
         for (int i = 0; i < 6; i++) {
             builder.append(random.nextInt(10));
+        }
+
+        int count = userService.count(new QueryWrapper<User>().eq("phone", phone));
+
+        if (count < 1) {
+            registerTask.phoneRegister(phone);
         }
 
         //反射拿到对应方法
