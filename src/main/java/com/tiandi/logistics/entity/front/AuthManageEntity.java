@@ -1,8 +1,5 @@
-package com.tiandi.logistics.entity.result;
+package com.tiandi.logistics.entity.front;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.tiandi.logistics.entity.pojo.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

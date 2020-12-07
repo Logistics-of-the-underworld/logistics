@@ -2,7 +2,6 @@ package com.tiandi.logistics.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
@@ -10,7 +9,7 @@ import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.pojo.Company;
 import com.tiandi.logistics.entity.pojo.Role;
 import com.tiandi.logistics.entity.pojo.User;
-import com.tiandi.logistics.entity.result.AuthManageEntity;
+import com.tiandi.logistics.entity.front.AuthManageEntity;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.CompanyService;
 import com.tiandi.logistics.service.RoleService;

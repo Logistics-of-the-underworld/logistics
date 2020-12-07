@@ -1,12 +1,16 @@
 package com.tiandi.logistics.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tiandi.logistics.entity.front.VehicleResult;
 import com.tiandi.logistics.entity.pojo.Vehicle;
+import com.tiandi.logistics.entity.result.ResultMap;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -19,6 +23,7 @@ import java.util.Date;
 public interface VehicleService extends IService<Vehicle> {
     /**
      * 分页查询
+     *
      * @param page
      * @param limit
      * @param id_license
@@ -27,11 +32,12 @@ public interface VehicleService extends IService<Vehicle> {
      * @param state
      * @return
      */
-    IPage getAllVehicle(int page, int limit, String id_license, String type, Date create_time, Integer state);
+    IPage getAllVehicle(String page, String limit, String id_license, String type, String create_time, String state, String org);
 
     /**
      * 添加车辆
      * 一行受影响
+     *
      * @param vehicle 车辆实体类
      * @return
      */
@@ -39,6 +45,7 @@ public interface VehicleService extends IService<Vehicle> {
 
     /**
      * 修改车辆信息
+     *
      * @param vehicle 车辆实体类
      * @return
      */
@@ -46,8 +53,19 @@ public interface VehicleService extends IService<Vehicle> {
 
     /**
      * 根据车牌号删除用户
+     *
      * @param idLicense
      * @return
      */
     int deleteVehicle(String idLicense);
+
+    /**
+     * 根据组织名获取车辆
+     *
+     * @param current 当前页数
+     * @param size 页容量
+     * @param org  组织名
+     * @return
+     */
+    Page<VehicleResult> getVehicleByOrg(Long current, Long size, String org);
 }

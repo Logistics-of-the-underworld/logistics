@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tiandi.logistics.entity.pojo.User;
-import com.tiandi.logistics.entity.result.AuthManageEntity;
+import com.tiandi.logistics.entity.front.AuthManageEntity;
 import com.tiandi.logistics.mapper.UserMapper;
 import com.tiandi.logistics.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

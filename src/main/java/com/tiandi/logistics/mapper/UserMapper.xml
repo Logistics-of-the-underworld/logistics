@@ -9,7 +9,7 @@
  -->
 <mapper namespace="com.tiandi.logistics.mapper.UserMapper">
 
-    <resultMap id="AuthManageMap" type="com.tiandi.logistics.entity.result.AuthManageEntity">
+    <resultMap id="AuthManageMap" type="com.tiandi.logistics.entity.front.AuthManageEntity">
         <id property="idTbUser" column="id_tb_user"/>
         <result property="username" column="username"/>
         <result property="email" column="email"/>

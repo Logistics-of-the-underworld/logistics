@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tiandi.logistics.entity.pojo.User;
-import com.tiandi.logistics.entity.result.AuthManageEntity;
+import com.tiandi.logistics.entity.front.AuthManageEntity;
 
 import java.util.List;
 
