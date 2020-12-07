@@ -29,7 +29,7 @@ public class AsyncPhoneRegisterTask {
     public void phoneRegister(String phone) {
         log.info("新手机用户注册异步任务开始");
         User user = new User();
-        user.setUsername(phone);
+        user.setUsername("P" + phone);
         user.setPhone(phone);
         CharSequence sequence = phone.subSequence(phone.length() - 6, phone.length());
         user.setSalt(UUID.randomUUID().toString());
