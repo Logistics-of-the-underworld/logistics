@@ -2,6 +2,7 @@ package com.tiandi.logistics.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tiandi.logistics.entity.front.PutOrder;
 import com.tiandi.logistics.entity.pojo.Order;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public interface OrderService extends IService<Order> {
      * @param order 订单实体类
      * @return
      */
-    int addOrder(Order order);
+    int addOrder(PutOrder order);
 
 
     /**

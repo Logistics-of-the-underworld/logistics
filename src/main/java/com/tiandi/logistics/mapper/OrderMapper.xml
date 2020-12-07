@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tiandi.logistics.mapper.OrderMapper">
+
+
+    <insert id="CreateOrder" parameterType="com.tiandi.logistics.entity.front.PutOrder">
+        insert into tp_order_goods
+        (id_tp_order_goods,id_goods,id_order,name_goods,count_goods,id_sort_goods)
+        values (default, #{idGoods}, #{idOrder}, #{nameGoods}, #{countGoods}, #{idSortGoods});
+        insert into tp_order
+        (id_tp_order,id_order,username,state_order,sender_address,sender_name,sender_phone,receiver_name,receiver_phone,receiver_address,delivery_price,payment_method,marks)
+        values (default, #{idOrder},#{username}, #{stateOrder}, #{senderAddress}, #{senderName}, #{senderPhone},#{receiverName}, #{receiverPhone}, #{receiverAddress}, #{deliveryPrice}, #{paymentMethod}, #{marks});
+    </insert>
+    <insert id="CreateOrderNext" parameterType="com.tiandi.logistics.entity.front.PutOrder">
+
+    </insert>
+</mapper>

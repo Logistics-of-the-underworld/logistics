@@ -8,12 +8,10 @@ import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.pojo.Order;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.OrderService;
-import com.tiandi.logistics.utils.JWTUtil;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * 订单管理控制层接口
@@ -57,38 +55,6 @@ public class OrderController {
         resultMap.success().message("查询成功");
         return resultMap;
     }
-
-
-    @PostMapping("/addOrder")
-    @ControllerLogAnnotation(remark = "订单添加",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.ADD)
-    @ApiOperation(value = "添加订单", notes = "添加一个订单")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "order", value = "订单对象", required = true, paramType = "query", dataType = "String")
-    })
-    @ApiResponses({
-            @ApiResponse(code = 40000, message = "订单添加成功！"),
-            @ApiResponse(code = 50011, message = "订单添加失败，请重试！")
-    })
-    public ResultMap addOrder(@RequestParam(value = "order", required = false) String orderStr,
-                              @RequestHeader String token){
-        String userName = JWTUtil.getUsername(token);
-
-        //判空，防止抛出异常
-        if (orderStr == null || "".equals(orderStr)) {
-            return resultMap.fail().code(40010).message("服务器内部错误");
-        }
-
-        Order order = JSON.parseObject(orderStr, Order.class);
-
-        int save = orderService.addOrder(order);
-        if (save == 1){
-            resultMap.success().message("添加成功");
-        } else {
-            resultMap.fail().message("添加失败");
-        }
-        return resultMap;
-    }
-
 
     @PostMapping("/updateOrder")
     @ControllerLogAnnotation(remark = "订单更新",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.UPDATE)

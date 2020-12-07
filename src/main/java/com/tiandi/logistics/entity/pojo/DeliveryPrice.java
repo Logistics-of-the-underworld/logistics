@@ -19,10 +19,9 @@ import java.math.BigDecimal;
  * @since 2020-11-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tp_delivery_price")
 @ApiModel(value="DeliveryPrice对象", description="配送价格管理")
-public class DeliveryPrice extends BaseEntity {
+public class DeliveryPrice {
 
     private static final long serialVersionUID = 1L;
 

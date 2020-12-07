@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tiandi.logistics.entity.front.PutOrder;
 import com.tiandi.logistics.entity.pojo.Order;
 import com.tiandi.logistics.mapper.OrderMapper;
 import com.tiandi.logistics.service.OrderService;
@@ -66,8 +67,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public int addOrder(Order order) {
-        int insert = orderMapper.insert(order);
+    public int addOrder(PutOrder order) {
+        int insert = orderMapper.CreateOrder(order);
         return insert;
     }
 

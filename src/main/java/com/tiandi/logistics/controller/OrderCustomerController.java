@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
+import com.tiandi.logistics.entity.front.PutOrder;
 import com.tiandi.logistics.entity.pojo.Order;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.OrderService;
@@ -49,7 +50,6 @@ public class OrderCustomerController {
             @RequestParam(value = "importance",required = false) Integer importance,
             @RequestParam(value = "stateOrder",required = false) Integer stateOrder){
         String username = JWTUtil.getUsername(token);
-        System.out.println(username);
         final IPage allOrder = orderService.getAllOrder(page, limit, receiverAddress, importance, stateOrder,username);
         resultMap.addElement("data",allOrder.getRecords());
         resultMap.addElement("total",allOrder.getTotal());
@@ -58,7 +58,7 @@ public class OrderCustomerController {
     }
 
 
-    @PostMapping("/addOrder")
+    @PostMapping("/createOrder")
     @ControllerLogAnnotation(remark = "订单添加",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.ADD)
     @ApiOperation(value = "添加订单", notes = "添加一个订单")
     @ApiImplicitParams({
@@ -77,7 +77,7 @@ public class OrderCustomerController {
             return resultMap.fail().code(40010).message("服务器内部错误");
         }
 
-        Order order = JSON.parseObject(orderStr, Order.class);
+        PutOrder order = JSON.parseObject(orderStr, PutOrder.class);
 
         int save = orderService.addOrder(order);
         if (save == 1){

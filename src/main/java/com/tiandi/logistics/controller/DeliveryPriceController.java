@@ -57,10 +57,10 @@ public class DeliveryPriceController {
             @ApiResponse(code = 40000, message = "配送价格信息查询成功！"),
             @ApiResponse(code = 50011, message = "配送价格信息查询失败，请重试！")
     })
-    public ResultMap getAllDeliveryPrice(@RequestHeader String tooken,@PathVariable(value = "nameCompany",required = false) String name_company){
+    public ResultMap getAllDeliveryPrice(@RequestHeader String token,@PathVariable(value = "nameCompany",required = false) String name_company){
         /*获取前端登录的身份及其权限*/
-        String permission = JWTUtil.getUserPermission(tooken);
-        String role = JWTUtil.getUserRole(tooken);
+        String permission = JWTUtil.getUserPermission(token);
+        String role = JWTUtil.getUserRole(token);
 
         /*登录的身份是总公司管理员时*/
         if ("root".equals(permission) && "admin".equals(role)){
@@ -69,7 +69,7 @@ public class DeliveryPriceController {
             String deliveryPricesList = JSON.toJSONString(deliveryPrices);
             resultMap.success().message("配送价格信息查询成功！").addElement("data",deliveryPricesList);
             return resultMap;
-        }else if ("admin".equals(permission) && "distribution".equals(role) && name_company != null){
+        }else if ("admin".equals(permission) && "headCompany".equals(role) && name_company != null){
             /*查询省公司下所有配送点的信息*/
             List<Distribution> distributionList1 = distributionService.getBaseMapper().selectList(new QueryWrapper<Distribution>().eq("name_company", name_company));
             List<DeliveryPrice> deliveryPriceList = new ArrayList<>();
@@ -100,11 +100,7 @@ public class DeliveryPriceController {
                 /*把配送价格信息添加到集合*/
                 deliveryPriceList.add(id_delivery_price1);
             }
-
-            String distributionList = JSON.toJSONString(deliveryPriceList);
-
             resultMap.success().message("配送价格信息查询成功！").addElement("data",deliveryPriceList);
-
             return resultMap;
         }
         return resultMap.fail();

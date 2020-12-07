@@ -17,10 +17,9 @@ import lombok.EqualsAndHashCode;
  * @since 2020-11-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tp_delivery_price_spot")
 @ApiModel(value="DeliveryPriceSpot对象", description="站点到站点配送价格")
-public class DeliveryPriceSpot extends BaseEntity {
+public class DeliveryPriceSpot {
 
     private static final long serialVersionUID = 1L;
 
