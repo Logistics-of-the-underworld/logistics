@@ -91,9 +91,9 @@ public class ControllerLogAspect {
             param = getParams(joinPoint);
         }
 
-        sysBusinessLog.setResult(result.get("message").toString());
-
-        log.info("3");
+        if (e == null) {
+            sysBusinessLog.setResult(result.get("message").toString());
+        }
 
         sysBusinessLog.setOperationTime(LocalDateTime.now());
         sysBusinessLog.setRequestUrl(url + "&"+ param);
