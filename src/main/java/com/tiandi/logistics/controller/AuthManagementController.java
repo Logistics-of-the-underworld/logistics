@@ -66,7 +66,7 @@ public class AuthManagementController {
             @ApiImplicitParam(name = "note", value = "移除用户的原因备注", required = true, paramType = "query"),
             @ApiImplicitParam(name = "token", value = "凭证", required = true, paramType = "header")
     })
-    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin"})
+    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin", "distribution"})
     @RequiresPermissions(logical = Logical.OR, value = {"admin", "normal", "root"})
     public ResultMap deleteAuth(@RequestHeader String token, @RequestParam("targetUsername") String targetUsername,
                                 @RequestParam("note") String note) {
@@ -196,7 +196,7 @@ public class AuthManagementController {
             @ApiImplicitParam(name = "pageCurrent", value = "当前页", required = true, paramType = "path", dataType = "String"),
             @ApiImplicitParam(name = "delete", value = "是否是已经辞退的用户", required = true, paramType = "path", dataType = "String")
     })
-    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin"})
+    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin", "distribution"})
     @RequiresPermissions(logical = Logical.OR, value = {"admin", "normal", "root"})
     public ResultMap getAuthByOrganization(@RequestHeader String token, @PathVariable String organization,
                                            @PathVariable String size, @PathVariable String pageCurrent,
@@ -238,7 +238,7 @@ public class AuthManagementController {
             @ApiImplicitParam(name = "type", value = "角色类别", required = true, paramType = "path", dataType = "String"),
             @ApiImplicitParam(name = "delete", value = "是否是已经辞退的用户", required = true, paramType = "path", dataType = "String")
     })
-    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin"})
+    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin", "distribution"})
     @RequiresPermissions(logical = Logical.OR, value = {"admin", "normal", "root"})
     public ResultMap getAuthByOrganization(@RequestHeader String token, @PathVariable String organization,
                                            @PathVariable String type, @PathVariable String size,
@@ -276,6 +276,12 @@ public class AuthManagementController {
             Integer idTbRole = roleService.getOne(new QueryWrapper<Role>()
                     .select("id_tb_role")
                     .eq("role", "headCompany")
+                    .eq("permission", "worker")).getIdTbRole();
+            roleId.add(idTbRole);
+        } else if ("distribution".equals(userRole)) {
+            Integer idTbRole = roleService.getOne(new QueryWrapper<Role>()
+                    .select("id_tb_role")
+                    .eq("role", "distribution")
                     .eq("permission", "worker")).getIdTbRole();
             roleId.add(idTbRole);
         } else {

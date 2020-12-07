@@ -64,7 +64,7 @@ public class RoleObtainController {
     @GetMapping("/getRoleByIdentity")
     @ApiOperation(value = "根据身份获取权限")
     @ApiImplicitParam(name = "token", value = "凭证", required = true, paramType = "header")
-    @RequiresRoles(logical = Logical.OR, value = {"headCompany", "admin", "branchCompany"})
+    @RequiresRoles(logical = Logical.OR, value = {"headCompany", "admin", "branchCompany", "distribution"})
     public ResultMap getRoleByIdentity(@RequestHeader String token) {
 
         String userRole = JWTUtil.getUserRole(token);
@@ -76,6 +76,9 @@ public class RoleObtainController {
         } else if ("headCompany".equals(userRole)) {
             resultMap.success().message("获取权限成功！")
                     .addElement("role", roleService.list(new QueryWrapper<Role>().eq("role", "branchCompany")));
+        } else if ("distribution".equals(userRole)) {
+            resultMap.success().message("获取授权成功")
+                    .addElement("role", roleService.list(new QueryWrapper<Role>().eq("role", "distribution")));
         } else {
             resultMap.success().message("获取权限成功")
                     .addElement("role", roleService.list(new QueryWrapper<Role>()

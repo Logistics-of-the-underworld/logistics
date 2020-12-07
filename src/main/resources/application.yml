@@ -21,7 +21,7 @@ spring:
       pool:
         max-active: 100
         max-idle: 50
-        max-wait: -1ms
+        max-wait: 1000ms
         min-idle: 50
   servlet:
     multipart:

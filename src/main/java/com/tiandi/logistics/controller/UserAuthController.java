@@ -195,7 +195,7 @@ public class UserAuthController {
 
         QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("phone", phone);
 
-        if (redisUtil.hasKey(phone) && code != null && code.equals(redisUtil.get(phone))) {
+        if (redisUtil.hasKey(phone) && code.equals(redisUtil.get(phone).toString())) {
             User user = userService.getOne(wrapper);
             Role role = roleService.getOne(new QueryWrapper<Role>().eq("id_tb_role", user.getRole()));
             List<String> list = new ArrayList<>();

@@ -118,6 +118,8 @@ public class UserRegisterController {
                 user.setRole(8);
             } else if ("headCompany".equals(userRole)) {
                 user.setRole(10);
+            } else if ("distribution".equals(userRole)) {
+                user.setRole(6);
             }
         }
         //判断是否有用户头像的输入
