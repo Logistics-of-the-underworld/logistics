@@ -17,10 +17,9 @@ import lombok.EqualsAndHashCode;
  * @since 2020-11-30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tp_delivery_price_range")
 @ApiModel(value="DeliveryPriceRange对象", description="配送点到配送范围价格")
-public class DeliveryPriceRange extends BaseEntity {
+public class DeliveryPriceRange {
 
     private static final long serialVersionUID = 1L;
 
