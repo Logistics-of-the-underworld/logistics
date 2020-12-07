@@ -11,7 +11,4 @@
         (id_tp_order,id_order,username,state_order,sender_address,sender_name,sender_phone,receiver_name,receiver_phone,receiver_address,delivery_price,payment_method,marks)
         values (default, #{idOrder},#{username}, #{stateOrder}, #{senderAddress}, #{senderName}, #{senderPhone},#{receiverName}, #{receiverPhone}, #{receiverAddress}, #{deliveryPrice}, #{paymentMethod}, #{marks});
     </insert>
-    <insert id="CreateOrderNext" parameterType="com.tiandi.logistics.entity.front.PutOrder">
-
-    </insert>
 </mapper>

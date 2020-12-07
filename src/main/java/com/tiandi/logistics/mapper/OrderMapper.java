@@ -17,5 +17,4 @@ import java.util.List;
  */
 public interface OrderMapper extends BaseMapper<Order> {
     int CreateOrder(PutOrder putOrder);
-    int CreateOrderNext(PutOrder putOrder);
 }

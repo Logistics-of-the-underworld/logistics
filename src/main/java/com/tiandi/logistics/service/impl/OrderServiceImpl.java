@@ -7,8 +7,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tiandi.logistics.entity.front.PutOrder;
 import com.tiandi.logistics.entity.pojo.Order;
+import com.tiandi.logistics.entity.pojo.OrderGoods;
+import com.tiandi.logistics.mapper.OrderGoodsMapper;
 import com.tiandi.logistics.mapper.OrderMapper;
 import com.tiandi.logistics.service.OrderService;
+import com.tiandi.logistics.utils.BarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private OrderGoodsMapper orderGoodsMapper;
+    @Autowired
+    private BarCodeUtil barCodeUtil;
 
     @Override
     public IPage getAllOrder(int page, int limit, String receiver_address, String senderAddress, String receiver_name, Integer state_order) {
@@ -76,6 +83,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public int updateOrder(Order order) {
         QueryWrapper condition = new QueryWrapper();
         condition.eq("id_order",order.getIdOrder());
+        OrderGoods orderGoods = orderGoodsMapper.selectOne(condition);
+        String id_bar_code = ""+order.getIdDistribution()+order.getIdOrder()+orderGoods.getIdSortGoods();
+        String barCodeUrl = barCodeUtil.generateBarCode128(id_bar_code);
+        order.setBarCodeUrl(barCodeUrl);
+        order.setIdBarCode(id_bar_code);
         int update = orderMapper.update(order, condition);
         return update;
     }

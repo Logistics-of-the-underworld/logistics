@@ -43,7 +43,7 @@ public class Order extends BaseEntity {
     private String barCodeUrl;
 
     @ApiModelProperty(value = "条形码编号")
-    private Integer idBarCode;
+    private String idBarCode;
 
     @ApiModelProperty(value = "订单状态 0.未处理，1.审核通过，2.在途中，3.在配送中，4.已签收，5.等待支付，6.已完成，7.退订")
     private Integer stateOrder;
