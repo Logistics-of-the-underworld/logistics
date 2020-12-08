@@ -1,6 +1,7 @@
 package com.tiandi.logistics.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
@@ -56,6 +57,26 @@ public class OrderCustomerController {
         resultMap.success().message("查询成功");
         return resultMap;
     }
+
+    @GetMapping("/getOrderByID/{idOrder}")
+    @ControllerLogAnnotation(remark = "订单获取",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
+    @ApiOperation(value = "订单获取",notes = "订单号查询单个订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "receiverAddress", value = "订单号", required = true, paramType = "query", dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "订单查询成功！"),
+            @ApiResponse(code = 50011, message = "订单查询失败，请重试！")
+    })
+    public ResultMap getOrderByID(@PathVariable String idOrder){
+        QueryWrapper condition = new QueryWrapper();
+        condition.eq("id_order",idOrder);
+        Order one = orderService.getOne(condition);
+        resultMap.addElement("data",one);
+        resultMap.success().message("查询成功");
+        return resultMap;
+    }
+
 
 
     @PostMapping("/createOrder")

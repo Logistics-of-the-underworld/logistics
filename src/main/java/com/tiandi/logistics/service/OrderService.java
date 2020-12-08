@@ -41,6 +41,8 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     IPage getAllOrder(int page, int limit, String receiverAddress, Integer importance, Integer stateOrder, String username);
+
+
     /**
      * 添加订单
      * @param order 订单实体类

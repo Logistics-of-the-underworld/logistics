@@ -59,13 +59,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public IPage getAllOrder(int page, int limit, String receiverAddress, Integer importance, Integer stateOrder, String username) {
         IPage<Order> OrderPage = new Page<>(page, limit);
         final QueryWrapper condition = new QueryWrapper();
-        if (receiverAddress != null){
+        if (receiverAddress != null && !"".equals(receiverAddress)){
             condition.eq("receiver_address",receiverAddress);
         }
-        if (importance != null){
+        if (importance != null && !"".equals(importance)){
             condition.eq("importance",importance);
         }
-        if (stateOrder != null){
+        if (stateOrder != null && !"".equals(stateOrder)){
             condition.eq("state_order",stateOrder);
         }
         condition.eq("username",username);
