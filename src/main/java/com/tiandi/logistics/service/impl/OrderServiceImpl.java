@@ -105,11 +105,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return null;
     }
 
+
 //    @Override
 //    public List<Order> getStateOrder() {
 //        List<Order> roadsList = orderMapper.getStateOrder();
 //        return roadsList;
 //    }
 
+
+    @Override
+    public OrderGoods getOrderById(String idOrder) {
+        OrderGoods orderGoods=orderMapper.getOrderById(idOrder);
+        return orderGoods;
+    }
 
 }

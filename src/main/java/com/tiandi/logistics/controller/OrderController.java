@@ -6,11 +6,14 @@ import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.pojo.Order;
+import com.tiandi.logistics.entity.pojo.OrderGoods;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.OrderService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -112,6 +115,17 @@ public class OrderController {
 //        List<Order> stateOrder = orderService.getStateOrder();
 //        return resultMap.addElement("data",stateOrder).success();
 //    }
+
+
+    @PostMapping("/getOrderById")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "订单获取成功！"),
+            @ApiResponse(code = 50011, message = "订单获取失败，请重试！")
+    })
+    public ResultMap getOrderById(String idOrder){
+        OrderGoods ordergoods = orderService.getOrderById(idOrder);
+        return resultMap.addElement("data",ordergoods).success();
+    }
 
 
 }

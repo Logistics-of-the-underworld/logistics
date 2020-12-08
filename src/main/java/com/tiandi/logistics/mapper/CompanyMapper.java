@@ -12,5 +12,5 @@ import com.tiandi.logistics.entity.pojo.Company;
  * @since 2020-11-25
  */
 public interface CompanyMapper extends BaseMapper<Company> {
-
+    
 }

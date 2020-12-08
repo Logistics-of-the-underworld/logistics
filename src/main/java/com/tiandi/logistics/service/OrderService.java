@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tiandi.logistics.entity.front.PutOrder;
 import com.tiandi.logistics.entity.pojo.Order;
+import com.tiandi.logistics.entity.pojo.OrderGoods;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -65,5 +68,11 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     List<Order> getStateOrder();
+
+    /**
+     * 通过订单ID获取订单
+     * @return
+     */
+    OrderGoods getOrderById(String idOrder );
 }
 

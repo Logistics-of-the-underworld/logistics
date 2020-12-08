@@ -11,4 +11,11 @@
         (id_tp_order,id_order,username,state_order,sender_address,sender_name,sender_phone,receiver_name,receiver_phone,receiver_address,delivery_price,payment_method,marks)
         values (default, #{idOrder},#{username}, #{stateOrder}, #{senderAddress}, #{senderName}, #{senderPhone},#{receiverName}, #{receiverPhone}, #{receiverAddress}, #{deliveryPrice}, #{paymentMethod}, #{marks});
     </insert>
+
+
+    <select id="getOrderById" resultType="com.tiandi.logistics.entity.pojo.OrderGoods">
+        SELECT id_tp_order_goods,id_goods,id_order,name_goods,count_goods,heavy,volume,id_sort_goods,is_delete,create_time,update_time
+        FROM tp_order_goods
+        WHERE id_order=#{idOrder}
+    </select>
 </mapper>
