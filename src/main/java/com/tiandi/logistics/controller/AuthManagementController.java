@@ -25,6 +25,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,6 +209,45 @@ public class AuthManagementController {
 
         Page<AuthManageEntity> auth = (Page<AuthManageEntity>) userService.getAuthByOrganization(
                 new Page<>(Long.parseLong(pageCurrent), Long.parseLong(size)), organization, roleId, delete);
+
+        return resultMap.success().message("获取某个组织所有用户信息")
+                .addElement("total", auth.getTotal())
+                .addElement("userList", auth.getRecords())
+                .addElement("totalPageNumber", auth.getTotal() / Long.parseLong(size));
+    }
+
+    /**
+     * 通过组织来获取其对应的所属用户（员工）
+     *
+     * @param organization 组织名
+     * @param size         页容量
+     * @param pageCurrent  页数
+     * @param delete       删除标志位： 0： 现存 1：删除
+     * @param token        凭证
+     * @return
+     */
+    @GetMapping("/getAuthByOrganizationStandBy/{organization}/{size}/{pageCurrent}/{ban}/{delete}")
+    @ApiOperation(value = "通过组织获取用户", notes = "各个公司的管理员可以获取对应公司员工的接口\n系统管理员可以获取对应公司下的员工和管理员人员信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "凭证", required = true, paramType = "header", dataType = "String"),
+            @ApiImplicitParam(name = "organization", value = "组织名称", required = true, paramType = "path", dataType = "String"),
+            @ApiImplicitParam(name = "size", value = "页面容量", required = true, paramType = "path", dataType = "String"),
+            @ApiImplicitParam(name = "pageCurrent", value = "当前页", required = true, paramType = "path", dataType = "String"),
+            @ApiImplicitParam(name = "delete", value = "是否是已经辞退的用户", required = true, paramType = "path", dataType = "String")
+    })
+    @RequiresRoles(logical = Logical.OR, value = {"branchCompany", "headCompany", "admin", "distribution"})
+    @RequiresPermissions(logical = Logical.OR, value = {"admin", "normal", "root"})
+    public ResultMap getAuthByOrganizationStandBy(@RequestHeader String token, @PathVariable String organization,
+                                           @PathVariable String size, @PathVariable String pageCurrent,
+                                           @PathVariable String delete, @PathVariable String ban) {
+
+        List<Integer> roleId = new ArrayList<>();
+        String userRole = JWTUtil.getUserRole(token);
+
+        getRoleListTools(userRole, organization, roleId);
+
+        Page<AuthManageEntity> auth = (Page<AuthManageEntity>) userService.getAuthByOrganization(
+                new Page<>(Long.parseLong(pageCurrent), Long.parseLong(size)), organization, roleId, delete, ban);
 
         return resultMap.success().message("获取某个组织所有用户信息")
                 .addElement("total", auth.getTotal())

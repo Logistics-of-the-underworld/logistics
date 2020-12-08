@@ -72,4 +72,17 @@
         AND tpu.role IN (1,2)
         AND tpu.is_delete = 0
     </select>
+
+    <select id="getAuthByOrganizationStandBy" resultMap="AuthManageMap">
+        SELECT tpu.id_tb_user,tpu.username,tpu.email,tpu.phone,tpu.petname,tpu.icon,tpu.ban,tpr.role,tpr.permission,tpr.note
+        FROM tp_organization_relation AS tor LEFT JOIN tp_user AS tpu ON tor.user_id = tpu.id_tb_user
+        INNER JOIN tp_role AS tpr ON tpr.id_tb_role = tpu.role
+        WHERE tor.organization = #{organization}
+        AND tpu.role IN
+        <foreach collection="role" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND tpu.is_delete = #{delete}
+        AND tpu.ban = 1
+    </select>
 </mapper>

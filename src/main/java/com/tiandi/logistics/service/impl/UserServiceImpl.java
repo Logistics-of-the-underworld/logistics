@@ -34,6 +34,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public IPage<AuthManageEntity> getAuthByOrganization(Page<?> page, String organization, List<Integer> role, String delete, String ban) {
+        return userMapper.getAuthByOrganizationStandBy(page, organization, role, delete, ban);
+    }
+
+    @Override
     public IPage<AuthManageEntity> getAuthByOrganizationOnType(Page<?> page, String organization, List<Integer> role, String type, String delete) {
         return userMapper.getAuthByOrganizationOnType(page, organization, role, type, delete);
     }

@@ -39,7 +39,7 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public Mail prepareMail(Context context, String sendTo) {
-        String emailContent = templateEngine.process("senderTemplate", context);
+        String emailContent = templateEngine.process("activeTemplate", context);
         Mail mail = new Mail();
         mail.setFrom("thulium0601@163.com");
         mail.setTo(sendTo);

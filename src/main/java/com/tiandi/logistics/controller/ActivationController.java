@@ -63,10 +63,40 @@ public class ActivationController {
     public ResultMap activation(HttpServletResponse response, @PathVariable("userID") String userID) {
         boolean exist = redisUtil.hasKey(userID);
         if (!exist) {
-            return resultMap.fail().message("验证码已过期，请重新登录获取激活邮件");
+            return resultMap.fail().message("有效期已过，默认拒绝offer");
         } else {
             Integer pc_id = (Integer) redisUtil.get(userID);
             if (userService.update(new UpdateWrapper<User>().set("ban", 0).eq("id_tb_user", pc_id))) {
+                redisUtil.del(userID);
+                //重定向到登录页面
+                try {
+                    System.out.println(url);
+                    response.sendRedirect(url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            } else {
+                return resultMap.fail().message("服务器内部错误");
+            }
+        }
+    }
+
+    @GetMapping("/refuse/{userID}")
+    @ApiOperation(value = "员工拒绝加入公司接口")
+    @ApiImplicitParam(name = "userID", value = "激活的用户ID", required = true, paramType = "path", dataType = "String")
+    @ApiResponses({
+            @ApiResponse(code = 50001, message = "验证码已过期，请重新登录获取激活邮件"),
+            @ApiResponse(code = 40000, message = "成功请求自动跳转"),
+            @ApiResponse(code = 50000, message = "服务器内部错误")
+    })
+    public ResultMap refuse(HttpServletResponse response, @PathVariable("userID") String userID) {
+        boolean exist = redisUtil.hasKey(userID);
+        if (!exist) {
+            return resultMap.fail().message("有效期已过，默认拒绝offer");
+        } else {
+            Integer pc_id = (Integer) redisUtil.get(userID);
+            if (userService.update(new UpdateWrapper<User>().set("ban", 2).set("is_delete", 1).eq("id_tb_user", pc_id))) {
                 redisUtil.del(userID);
                 //重定向到登录页面
                 try {
@@ -110,6 +140,7 @@ public class ActivationController {
             @ApiResponse(code = 40000, message = "修改成功！请稍后前往邮箱进行激活！"),
             @ApiResponse(code = 50000, message = "服务器内部错误")
     })
+    @Deprecated
     public ResultMap changeEmail(@RequestParam("username") String username, @RequestParam("email") String email) {
         User user = userService.getOne(new QueryWrapper<User>().select("id_tb_user", "activeUUID").eq("username", username));
         String uuid = user.getActiveuuid();
@@ -123,7 +154,7 @@ public class ActivationController {
             return resultMap.fail().message("服务器内部错误");
         }
         //异步提交激活邮件发送请求
-        mailTask.activeMailTask(uuid, email);
+        mailTask.activeMailTask(uuid, email, "", "");
         return resultMap.success().message("修改成功！请稍后前往邮箱进行激活！");
     }
 }

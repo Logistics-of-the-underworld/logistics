@@ -40,6 +40,16 @@ public interface UserService extends IService<User> {
      * @param page         分页
      * @param organization 组织名
      * @param role         权限
+     * @return
+     */
+    IPage<AuthManageEntity> getAuthByOrganization(Page<?> page, String organization, List<Integer> role, String delete, String ban);
+
+    /**
+     * 通过组织来获取其对应的所属用户（员工）
+     *
+     * @param page         分页
+     * @param organization 组织名
+     * @param role         权限
      * @param type         角色类别（权限类别）
      * @return
      */

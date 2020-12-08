@@ -13,7 +13,6 @@ import com.tiandi.logistics.service.OrganizationRelationService;
 import com.tiandi.logistics.service.UserService;
 import com.tiandi.logistics.utils.*;
 import io.swagger.annotations.*;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +46,8 @@ public class UserRegisterController {
     private UserService userService;
     @Autowired
     private OrganizationRelationService relationService;
+    @Autowired
+    private ToPinInUtil pinInUtil;
 
     /**
      * 电话校验正则表达式
@@ -64,7 +65,7 @@ public class UserRegisterController {
      */
     @PostMapping("/register")
     @ControllerLogAnnotation(remark = "注册功能", sysType = SysTypeEnum.NORMAL, opType = OpTypeEnum.ADD)
-    @ApiOperation(value = "用户注册接口",notes = "继承普通用户注册及公司内部添加员工方法为一体\n利用缺省的空值作为判断依据")
+    @ApiOperation(value = "用户注册接口", notes = "继承普通用户注册及公司内部添加员工方法为一体\n利用缺省的空值作为判断依据")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "user", value = "User实体类JSON字符串", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "icon", value = "用户头像", paramType = "query", dataType = "File"),
@@ -97,6 +98,13 @@ public class UserRegisterController {
         //默认用户昵称
         if (user.getPetname() == null || "".equals(user.getPetname())) {
             user.setPetname("TP用户" + new Random().nextInt(1000));
+        }
+        String name = user.getUsername();
+        if (organization != null) {
+            String pinyin = pinInUtil.toPinyin(name);
+            int count = userService.count(new QueryWrapper<User>().like("username", pinyin));
+            count += 2;
+            user.setUsername(pinyin.replace(" ","") + count);
         }
 
         //密码加密处理
@@ -145,7 +153,7 @@ public class UserRegisterController {
                 //Reds保存(UUID，userID)键值对
                 redisUtil.set(userUUID, user.getIdTbUser(), 60 * 60 * 24);
                 //异步提交激活邮件发送请求
-                mailTask.activeMailTask(userUUID, user.getEmail());
+                mailTask.activeMailTask(userUUID, user.getEmail(), organization, name);
                 return resultMap.success().message("添加成功！请通知其前往邮箱进行激活！");
             }
         }
