@@ -67,7 +67,7 @@ public class RouteController {
             @ApiResponse(code = 50011, message = "路线查询失败，请重试！")
     })
     public ResultMap addRoute(@RequestParam(value = "driver_name", required = false) String driver_name,
-                              @RequestParam(value = "lineInfo", required = false) String lineInfoStr){
+                              @RequestParam(value = "lineInfo", required = true) String lineInfoStr){
         //判空，防止抛出异常
         if (lineInfoStr == null || "".equals(lineInfoStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");

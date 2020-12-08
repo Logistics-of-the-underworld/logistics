@@ -83,11 +83,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public int updateOrder(Order order) {
         QueryWrapper condition = new QueryWrapper();
         condition.eq("id_order",order.getIdOrder());
-        OrderGoods orderGoods = orderGoodsMapper.selectOne(condition);
-        String id_bar_code = ""+order.getIdDistribution()+order.getIdOrder()+orderGoods.getIdSortGoods();
-        String barCodeUrl = barCodeUtil.generateBarCode128(id_bar_code);
-        order.setBarCodeUrl(barCodeUrl);
-        order.setIdBarCode(id_bar_code);
+        if (order.getStateOrder() == 0){
+            OrderGoods orderGoods = orderGoodsMapper.selectOne(condition);
+            String id_bar_code = ""+order.getIdDistribution()+order.getIdOrder()+orderGoods.getIdSortGoods();
+            String barCodeUrl = barCodeUtil.generateBarCode128(id_bar_code);
+            order.setBarCodeUrl(barCodeUrl);
+            order.setIdBarCode(id_bar_code);
+        }
         int update = orderMapper.update(order, condition);
         return update;
     }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
+import com.tiandi.logistics.constant.SystemConstant;
 import com.tiandi.logistics.entity.pojo.Order;
 import com.tiandi.logistics.entity.pojo.OrderGoods;
 import com.tiandi.logistics.entity.result.ResultMap;
@@ -117,7 +118,7 @@ public class OrderController {
 //    }
 
 
-    @PostMapping("/getOrderById")
+    @PostMapping("/getOrderGoodsById")
     @ApiResponses({
             @ApiResponse(code = 40000, message = "订单获取成功！"),
             @ApiResponse(code = 50011, message = "订单获取失败，请重试！")
