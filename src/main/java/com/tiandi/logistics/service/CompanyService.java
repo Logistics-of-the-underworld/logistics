@@ -44,4 +44,6 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     int deleteCompany(String idCompany);
+
+    Integer getMaxID();
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    @author Yue Wu
+    @since 2020/12/8
+ -->
+<mapper namespace="com.tiandi.logistics.mapper.CompanyMapper">
+
+    <resultMap id="companyMap" type="com.tiandi.logistics.entity.front.CompanyFront">
+        <result property="idTpCompany" column="id_tp_company"/>
+        <result property="idCompany" column="id_company"/>
+        <result property="nameCompany" column="name_company"/>
+        <result property="createTime" column="create_time"/>
+        <result property="disTotal" column="total"/>
+    </resultMap>
+
+    <select id="getAllCompany" resultMap="companyMap">
+        SELECT tc.id_tp_company,tc.id_company,tc.name_company,tc.create_time,IFNULL(vcd.total, 0) AS total
+        FROM tp_company AS tc LEFT JOIN view_com_dis_num AS vcd ON tc.name_company = vcd.name_company
+        WHERE tc.is_delete = 0
+        AND tc.head_company IS NOT NULL
+        <if test="idCompany != null and !'undefined'.equals(idCompany) and idCompany.length() > 1">
+            AND tc.id_company = #{idCompany}
+        </if>
+        <if test="nameCompany != null and !'undefined'.equals(nameCompany) and nameCompany.length() > 1">
+            AND tc.name_company = #{nameCompany}
+        </if>
+    </select>
+
+    <select id="getMaxID" resultType="java.lang.Integer">
+        SELECT MAX(tc.id_company)
+        FROM tp_company AS tc
+    </select>
+</mapper>
