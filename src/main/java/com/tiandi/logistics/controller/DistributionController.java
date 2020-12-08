@@ -57,7 +57,7 @@ public class DistributionController {
             List<Distribution> distributionList = distributionService.list();
             resultMap.success().message("配送点信息查询成功！").addElement("data",distributionList);
             return resultMap;
-        } else if ("admin".equals(permission) && "distribution".equals(role) && name_company != null){
+        } else if ("admin".equals(permission) && name_company != null){
             List<Distribution> distributionList = distributionService.getBaseMapper().selectList(new QueryWrapper<Distribution>().eq("name_company", name_company));
             resultMap.success().message("配送点信息查询成功！").addElement("data",distributionList);
             return resultMap;
