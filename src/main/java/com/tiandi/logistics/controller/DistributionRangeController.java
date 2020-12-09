@@ -115,4 +115,25 @@ public class DistributionRangeController {
         }
         return resultMap;
     }
+
+    @PostMapping("/addDistributionRange")
+    @ControllerLogAnnotation(remark = "添加配送范围功能",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.ADD)
+    @ApiOperation(value = "添加交接单接口", notes = "根据配送范围对象添加配送范围")
+    @ApiImplicitParam(name = "distributionRange",value = "交接单添加对象",required = true,dataType = "String")
+    @ApiResponses({
+            @ApiResponse(code = 40000, message = "添加配送范围成功！"),
+            @ApiResponse(code = 50011, message = "添加配送范围失败，请重试！")
+    })
+    public ResultMap addDistributionRange(@RequestParam("distributionRange") String distributionRange){
+        if (distributionRange == null || "".equals(distributionRange)){
+            resultMap.fail().code(40010).message("服务器内部错误!");
+        }
+        DistributionRange distributionRange1 = JSON.parseObject(distributionRange, DistributionRange.class);
+        int insert = distributionRangeService.getBaseMapper().insert(distributionRange1);
+        if (insert == 1){
+            return resultMap.success().message("配送范围添加成功！");
+        }else {
+            return resultMap.fail().message("配送范围添加失败！");
+        }
+    }
 }
