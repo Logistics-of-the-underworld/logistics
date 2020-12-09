@@ -64,19 +64,22 @@ public class OrderController {
     @ControllerLogAnnotation(remark = "订单更新",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.UPDATE)
     @ApiOperation(value = "订单更新", notes = "根据订单ID更新订单信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "order", value = "订单对象", required = false, paramType = "query", dataType = "String")
+            @ApiImplicitParam(name = "order", value = "订单对象", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "heavy", value = "物品重量", required = false, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "volume", value = "物品体积", required = false, paramType = "query", dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "订单更新成功！"),
             @ApiResponse(code = 50011, message = "订单更新失败，请重试！")
     })
-    public ResultMap updateOrder(@RequestParam(value = "order") String orderStr){
+    public ResultMap updateOrder(@RequestParam(value = "order") String orderStr,
+                                 @RequestParam(value = "heavy", required = false) Double heavy){
         //判空，防止抛出异常
         if (orderStr == null || "".equals(orderStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");
         }
         Order order = JSON.parseObject(orderStr, Order.class);
-        int update = orderService.updateOrder(order);
+        int update = orderService.updateOrder(order,heavy);
         if (update == 1){
             resultMap.success().message("更新成功");
         } else {

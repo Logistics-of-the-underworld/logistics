@@ -6,7 +6,6 @@ import com.tiandi.logistics.entity.front.PutOrder;
 import com.tiandi.logistics.entity.pojo.Order;
 import com.tiandi.logistics.entity.pojo.OrderGoods;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -51,12 +50,14 @@ public interface OrderService extends IService<Order> {
     int addOrder(PutOrder order);
 
 
+    int updateOrder(Order order);
     /**
      * 更新订单
      * @param order 订单实体类
+     * @param heavy
      * @return
      */
-    int updateOrder(Order order);
+    int updateOrder(Order order,Double heavy);
 
     /**
      * 删除订单
