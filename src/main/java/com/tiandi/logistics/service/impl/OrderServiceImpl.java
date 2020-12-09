@@ -12,9 +12,11 @@ import com.tiandi.logistics.mapper.OrderGoodsMapper;
 import com.tiandi.logistics.mapper.OrderMapper;
 import com.tiandi.logistics.service.OrderService;
 import com.tiandi.logistics.utils.BarCodeUtil;
+import com.tiandi.logistics.utils.LogisticsPriseCountUntil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,6 +36,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderGoodsMapper orderGoodsMapper;
     @Autowired
     private BarCodeUtil barCodeUtil;
+    @Autowired
+    private LogisticsPriseCountUntil logisticsPriseCountUntil;
 
     @Override
     public IPage getAllOrder(int page, int limit, String receiver_address, String senderAddress, String receiver_name, Integer state_order) {
@@ -91,7 +95,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public int updateOrder(Order order, Double heavy) {
         QueryWrapper condition = new QueryWrapper();
         condition.eq("id_order",order.getIdOrder());
-        if (order.getStateOrder() <= 1 && order.getIdBarCode() != null){
+        if (order.getStateOrder() <= 1 && order.getIdBarCode() == null){
             OrderGoods orderGoods = orderGoodsMapper.selectOne(condition);
             String id_bar_code = ""+order.getIdDistribution()+order.getIdOrder()+orderGoods.getIdSortGoods();
             String barCodeUrl = barCodeUtil.generateBarCode128(id_bar_code);
@@ -100,6 +104,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             if (heavy != null ){
                 orderGoods.setHeavy(heavy);
                 orderGoodsMapper.update(orderGoods,condition);
+                String price = logisticsPriseCountUntil.price(heavy.toString());
+                order.setDeliveryPrice(new BigDecimal(price));
             }
         }
         int update = orderMapper.update(order, condition);

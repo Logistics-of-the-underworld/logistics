@@ -11,6 +11,7 @@ import com.tiandi.logistics.entity.pojo.Order;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.OrderService;
 import com.tiandi.logistics.utils.JWTUtil;
+import com.tiandi.logistics.utils.LogisticsPriseCountUntil;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,8 @@ public class OrderCustomerController {
     private ResultMap resultMap;
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private LogisticsPriseCountUntil logisticsPriseCountUntil;
     @PostMapping("/getAllOrder")
     @ControllerLogAnnotation(remark = "订单获取",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.SELECT)
     @ApiOperation(value = "订单获取",notes = "通过页码、页数、收寄地、用户评价、订单状态")
@@ -77,7 +79,15 @@ public class OrderCustomerController {
         return resultMap;
     }
 
-
+    @PostMapping("/getOrderPrice")
+    public ResultMap getOrderPrice(@RequestParam(value = "heavy", required = true) String heavy){
+        //判空，防止抛出异常
+        if (heavy == null || "".equals(heavy)) {
+            return resultMap.fail().code(40010).message("服务器内部错误");
+        }
+        logisticsPriseCountUntil.price(heavy);
+        return resultMap.success().addElement("data",heavy);
+    }
 
     @PostMapping("/createOrder")
     @ControllerLogAnnotation(remark = "订单添加",sysType = SysTypeEnum.ADMIN,opType = OpTypeEnum.ADD)
