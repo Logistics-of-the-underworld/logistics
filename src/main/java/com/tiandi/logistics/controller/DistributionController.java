@@ -15,8 +15,6 @@ import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.DistributionService;
 import com.tiandi.logistics.utils.JWTUtil;
 import io.swagger.annotations.*;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,7 @@
 package com.tiandi.logistics.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
@@ -9,9 +10,11 @@ import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.front.AddHandover;
 import com.tiandi.logistics.entity.pojo.Distribution;
+import com.tiandi.logistics.entity.pojo.HandoverPackage;
 import com.tiandi.logistics.entity.pojo.HandoverSlip;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.DistributionService;
+import com.tiandi.logistics.service.HandoverPackageService;
 import com.tiandi.logistics.service.HandoverSlipService;
 import com.tiandi.logistics.utils.JWTUtil;
 import io.swagger.annotations.*;
@@ -37,7 +40,7 @@ public class HandoverController {
     @Autowired
     private HandoverSlipService handoverSlipService;
     @Autowired
-    private DistributionService distributionService;
+    private HandoverPackageService handoverPackageService;
 
     @GetMapping("/getAllHandover/{nameCompany}")
     @ApiOperation(value = "交接单信息接口",notes = "根据身份权限获取交接单的具体信息")
@@ -55,30 +58,28 @@ public class HandoverController {
         //总公司管理员
         if ("root".equals(permission) && "admin".equals(role)){
             List<HandoverSlip> handoverSlips = handoverSlipService.getBaseMapper().selectList(new QueryWrapper<HandoverSlip>());
-            String string = JSON.toJSONString(handoverSlips);
-            resultMap.success().message("查询交接单成功！").addElement("data",string);
+            resultMap.success().message("查询交接单成功！").addElement("data",handoverSlipService);
             return resultMap;
-        }else if ("admin".equals(permission) && name_company != null){//省公司管理员
+        }else if ("admin".equals(permission) && "headCompany".equals(role) && name_company != null){//省公司管理员
             List<HandoverSlip> handover = handoverSlipService.getHandover(name_company);
             if (handover != null){
-                String string = JSON.toJSONString(handover);
-                return resultMap.success().message("查询交接单成功！").addElement("data",string);
+                return resultMap.success().message("查询交接单成功！").addElement("data",handover);
             }else {
                 return resultMap.fail().message("查询交接单失败！");
             }
         }
         return resultMap.fail();
     }
-    @GetMapping("/getHandoverByID{idDistribution}")
-    public ResultMap getHandoverByID(@RequestHeader String token, @PathVariable("idDistribution")String id_distribution){
+    @GetMapping("/getHandoverByID{nameDistribution}")
+    public ResultMap getHandoverByID(@RequestHeader String token, @PathVariable("nameDistribution")String name_distribution){
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
 
-        if ("admin".equals(permission) && "distribution".equals(role) && id_distribution != null) {
-            List<HandoverSlip> handoverByID = handoverSlipService.getHandoverByID(id_distribution);
+        if ("admin".equals(permission) && "distribution".equals(role) && name_distribution != null) {
+            String string = JSON.toJSONString(name_distribution);
+            List<HandoverSlip> handoverByID = handoverSlipService.getHandoverByID(string);
             if (handoverByID != null){
-                String string = JSON.toJSONString(handoverByID);
-                return resultMap.success().message("查询交接单成功！").addElement("data",string);
+                return resultMap.success().message("查询交接单成功！").addElement("data",handoverByID);
             }else {
                 return resultMap.fail().message("查询交接单失败！");
             }
@@ -121,9 +122,11 @@ public class HandoverController {
         if (addHandover == null || "".equals(addHandover)){
             resultMap.fail().code(40010).message("服务器内部错误!");
         }
-        AddHandover addHandover1 = JSON.parseObject(addHandover, AddHandover.class);
-        int addHandover2 = handoverSlipService.CreateHandover(addHandover1);
-        if (addHandover2 == 1){
+        HandoverSlip addHandover1 = JSON.parseObject(addHandover, HandoverSlip.class);
+        HandoverPackage addHandover3 = JSON.parseObject(addHandover, HandoverPackage.class);
+        int addHandover2 = handoverSlipService.getBaseMapper().insert(addHandover1);
+        int insert = handoverPackageService.getBaseMapper().insert(addHandover3);
+        if (addHandover2 == 1 && insert == 1){
             return resultMap.success().message("交接单添加成功！");
         }else {
             return resultMap.fail().message("交接单更新失败！");

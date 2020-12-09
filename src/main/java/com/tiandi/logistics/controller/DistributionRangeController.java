@@ -43,11 +43,11 @@ public class DistributionRangeController {
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
 
-        if (permission.equals("root") && role.equals("admin")){
+        if ("root".equals(permission) && "admin".equals(role)){
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(null);
             resultMap.success().message("查询配送范围成功！").addElement("data",distributionRanges);
             return resultMap;
-        }else if (permission.equals("admin") && role.equals("distribution") && name_company != null){
+        }else if ("admin".equals(permission) && "distribution".equals(role) && name_company != null){
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>().eq("name_company", name_company));
             resultMap.success().message("查询配送范围成功！").addElement("data",distributionRanges);
             return resultMap;
@@ -60,10 +60,9 @@ public class DistributionRangeController {
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
 
-        if (permission.equals("admin") && role.equals("distribution") && id_distribution != null) {
+        if ("admin".equals(permission) && "distribution".equals(role) && id_distribution != null) {
             List<DistributionRange> distributionRanges = distributionRangeService.getBaseMapper().selectList(new QueryWrapper<DistributionRange>().eq("id_distribution", id_distribution));
-            String distributionRangesList = JSON.toJSONString(distributionRanges);
-            resultMap.success().message("查询配送范围成功！").addElement("data", distributionRangesList);
+            resultMap.success().message("查询配送范围成功！").addElement("data", distributionRanges);
             return resultMap;
         }
         return resultMap.fail();

@@ -17,9 +17,7 @@ import java.util.List;
 public interface HandoverSlipMapper extends BaseMapper<HandoverSlip> {
     List<HandoverSlip> getHandover(String name_company);
 
-    List<HandoverSlip> getHandoverByID(String id_distribution);
-
-    int CreateHandover(AddHandover addHandover);
+    List<HandoverSlip> getHandoverByID(String name_distribution);
 
     int deleteHandover(String id_handover_order);
 }

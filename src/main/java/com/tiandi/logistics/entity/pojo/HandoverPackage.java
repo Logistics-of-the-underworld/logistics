@@ -14,10 +14,9 @@ import lombok.EqualsAndHashCode;
  * @since 2020年12月08日, 0008 21:53
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("tp_package")
 @ApiModel(value="HandoverPackage对象", description="封装货号")
-public class HandoverPackage extends BaseEntity {
+public class HandoverPackage{
     private static final long serialVersionUID = 1L;
     @TableId(value = "id_tp_package", type = IdType.AUTO)
     private Integer idTpPackage;
@@ -27,4 +26,6 @@ public class HandoverPackage extends BaseEntity {
     private String idOrder;
     @ApiModelProperty(value = "交接单号")
     private String idHandoverOrder;
+    @ApiModelProperty(value = "逻辑删除")
+    private Integer isDelete;
 }

@@ -62,8 +62,7 @@ public class DeliveryPriceController {
         if ("root".equals(permission) && "admin".equals(role)){
             /*查询所有的配送价格信息*/
             List<DeliveryPrice> deliveryPrices = deliveryPriceService.getBaseMapper().selectList(new QueryWrapper<DeliveryPrice>());
-            String deliveryPricesList = JSON.toJSONString(deliveryPrices);
-            resultMap.success().message("配送价格信息查询成功！").addElement("data",deliveryPricesList);
+            resultMap.success().message("配送价格信息查询成功！").addElement("data",deliveryPrices);
             return resultMap;
         }else if ("admin".equals(permission) && "headCompany".equals(role) && name_company != null){
             /*查询省公司下所有配送点的信息*/
@@ -142,8 +141,7 @@ public class DeliveryPriceController {
                 list.add(deliveryPrice1);
             }
 
-            String string = JSON.toJSONString(list);
-            resultMap.success().message("配送价格信息查询成功！").addElement("data",string);
+            resultMap.success().message("配送价格信息查询成功！").addElement("data",list);
 
             return resultMap;
         }

@@ -9,4 +9,5 @@ import com.tiandi.logistics.entity.pojo.HandoverPackage;
  * @since 2020年12月08日, 0008 22:04
  */
 public interface HandoverPackageService extends IService<HandoverPackage> {
+
 }

@@ -32,8 +32,8 @@ public class HandoverSlipServiceImpl extends ServiceImpl<HandoverSlipMapper, Han
     }
 
     @Override
-    public List<HandoverSlip> getHandoverByID(String id_distribution) {
-        List<HandoverSlip> handoverByID = handoverSlipMapper.getHandoverByID(id_distribution);
+    public List<HandoverSlip> getHandoverByID(String name_distribution) {
+        List<HandoverSlip> handoverByID = handoverSlipMapper.getHandoverByID(name_distribution);
         return handoverByID;
     }
 
@@ -45,11 +45,6 @@ public class HandoverSlipServiceImpl extends ServiceImpl<HandoverSlipMapper, Han
         return update;
     }
 
-    @Override
-    public int CreateHandover(AddHandover addHandover) {
-        int addHandover1 = handoverSlipMapper.CreateHandover(addHandover);
-        return addHandover1;
-    }
 
     @Override
     public int deleteHandover(String id_handover_order) {
