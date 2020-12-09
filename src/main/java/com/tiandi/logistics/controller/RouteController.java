@@ -1,14 +1,17 @@
 package com.tiandi.logistics.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tiandi.logistics.aop.log.annotation.ControllerLogAnnotation;
 import com.tiandi.logistics.aop.log.enumeration.OpTypeEnum;
 import com.tiandi.logistics.aop.log.enumeration.SysTypeEnum;
 import com.tiandi.logistics.entity.front.LineInfoFront;
 import com.tiandi.logistics.entity.pojo.LineInfo;
+import com.tiandi.logistics.entity.pojo.Vehicle;
 import com.tiandi.logistics.entity.result.ResultMap;
 import com.tiandi.logistics.service.LineInfoService;
+import com.tiandi.logistics.service.VehicleService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -66,8 +69,7 @@ public class RouteController {
             @ApiResponse(code = 40000, message = "路线查询成功！"),
             @ApiResponse(code = 50011, message = "路线查询失败，请重试！")
     })
-    public ResultMap addRoute(@RequestParam(value = "driver_name", required = false) String driver_name,
-                              @RequestParam(value = "lineInfo", required = true) String lineInfoStr){
+    public ResultMap addRoute(@RequestParam(value = "lineInfo", required = true) String lineInfoStr){
         //判空，防止抛出异常
         if (lineInfoStr == null || "".equals(lineInfoStr)) {
             return resultMap.fail().code(40010).message("服务器内部错误");

@@ -29,6 +29,9 @@ public class LineInfo extends BaseEntity{
     @ApiModelProperty(value = "运费")
     private BigDecimal cost;
 
+    @ApiModelProperty(value = "司机")
+    private String driverName;
+
     @ApiModelProperty(value = "起始点站点编码")
     private Integer startDistribution;
 
