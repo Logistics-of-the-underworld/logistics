@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @since 2020/12/8 9:27
  */
 @Component
-public class ToPinInUtil {
+public final class ToPinInUtil {
 
     public String toPinyin(String chinese){
         String pinyinStr = "";
