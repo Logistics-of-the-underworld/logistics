@@ -28,7 +28,7 @@ public class HandoverSlip extends BaseEntity {
     private Integer idTpHandoverSlip;
 
     @ApiModelProperty(value = "订单编号")
-    private String idOrder;
+    private String idHandoverOrder;
 
     @ApiModelProperty(value = "封装贷号")
     private String idPackage;

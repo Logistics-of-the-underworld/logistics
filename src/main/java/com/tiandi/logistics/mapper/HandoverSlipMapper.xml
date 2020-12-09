@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tiandi.logistics.mapper.HandoverSlipMapper">
+
+
+    <select id="getHandover" resultType="com.tiandi.logistics.entity.pojo.HandoverSlip">
+        SELECT
+        id_tp_handover_slip,id_handover_order,id_package,stat_spot,handover_spot,receiver_name,create_time,update_time
+        from
+        tp_handover_slip
+        WHERE
+        id_handover_order IN (
+        SELECT
+        id_handover_order
+        FROM
+        tp_package
+        WHERE
+        id_order IN (
+        SELECT
+        id_order
+        FROM
+        tp_order
+        WHERE
+        id_distribution IN (
+        SELECT
+         id_distribution
+        FROM
+        tp_distribution
+        WHERE
+        name_company=#{name_company}
+        )
+        )
+		)
+    </select>
+
+    <select id="getHandoverByID" resultType="com.tiandi.logistics.entity.pojo.HandoverSlip">
+        SELECT
+        id_tp_handover_slip,id_handover_order,id_package,stat_spot,handover_spot,receiver_name,create_time,update_time
+        from
+        tp_handover_slip
+        WHERE
+        id_handover_order IN (
+        SELECT
+        id_handover_order
+        FROM
+        tp_package
+        WHERE
+        id_order IN (
+        SELECT
+        id_order
+        FROM
+        tp_order
+        WHERE
+        id_distribution=#{id_distribution}
+        )
+        )
+    </select>
+
+    <insert id="CreateHandover" parameterType="com.tiandi.logistics.entity.front.AddHandover">
+        INSERT INTO tp_handover_slip
+        (id_tp_handover_slip,id_handover_order,id_package,stat_spot,handover_spot,receiver_name)
+        values (default,#{idHandoverOrder},#{idPackage},#{statSpot},#{handoverSpot},#{receiverName});
+        INSERT INTO tp_package
+        (id_tp_package,id_package,id_order,id_handover_order)
+        values (default,#{idPackage},#{idOrder},#{idHandoverOrder});
+    </insert>
+
+    <update id="deleteHandover" parameterType="com.tiandi.logistics.entity.front.AddHandover">
+         update tp_handover_slip set is_delete=1 where id_handover_order=#{id_handover_order};
+         update tp_package set is_delete=1 where id_handover_order=#{id_handover_order};
+    </update>
+</mapper>

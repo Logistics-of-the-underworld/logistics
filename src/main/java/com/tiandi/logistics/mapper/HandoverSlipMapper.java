@@ -1,7 +1,10 @@
 package com.tiandi.logistics.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tiandi.logistics.entity.front.AddHandover;
 import com.tiandi.logistics.entity.pojo.HandoverSlip;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,11 @@ import com.tiandi.logistics.entity.pojo.HandoverSlip;
  * @since 2020-11-25
  */
 public interface HandoverSlipMapper extends BaseMapper<HandoverSlip> {
+    List<HandoverSlip> getHandover(String name_company);
 
+    List<HandoverSlip> getHandoverByID(String id_distribution);
+
+    int CreateHandover(AddHandover addHandover);
+
+    int deleteHandover(String id_handover_order);
 }
