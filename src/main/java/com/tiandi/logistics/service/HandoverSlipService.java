@@ -15,9 +15,9 @@ import java.util.List;
  * @since 2020-11-25
  */
 public interface HandoverSlipService extends IService<HandoverSlip> {
-    List<HandoverSlip> getHandover(String name_company);
+    List<HandoverSlip> getHandover(String name_distribution);
 
-    List<HandoverSlip> getHandoverByID(String name_distribution);
+    List<HandoverSlip> getHandoverByID(String idPackage,String name_distribution);
 
     int updateHandover(HandoverSlip handoverSlip);
 

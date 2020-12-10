@@ -8,59 +8,14 @@
         id_tp_handover_slip,id_handover_order,id_package,stat_spot,handover_spot,receiver_name,create_time,update_time
         from
         tp_handover_slip
-        WHERE
-        id_handover_order IN (
-        SELECT
-        id_handover_order
-        FROM
-        tp_package
-        WHERE
-        id_order IN (
-        SELECT
-        id_order
-        FROM
-        tp_order
-        WHERE
-        id_distribution IN (
-        SELECT
-         id_distribution
-        FROM
-        tp_distribution
-        WHERE
-        name_company=#{name_company}
-        )
-        )
-		)
+        where handover_spot = #{name_distribution} and is_delete = 0
     </select>
 
     <select id="getHandoverByID" resultType="com.tiandi.logistics.entity.pojo.HandoverSlip">
-        SELECT
-        id_tp_handover_slip,id_handover_order,id_package,stat_spot,handover_spot,receiver_name,create_time,update_time
+        select id_tp_handover_slip,tp_handover_slip.id_handover_order,tp_handover_slip.id_package,stat_spot,handover_spot,receiver_name,create_time,update_time
         from
-        tp_handover_slip
-        WHERE
-        id_handover_order IN (
-        SELECT
-        id_handover_order
-        FROM
-        tp_package
-        WHERE
-        id_order IN (
-        SELECT
-        id_order
-        FROM
-        tp_order
-        WHERE
-        id_distribution IN (
-        SELECT
-         id_distribution
-        FROM
-        tp_distribution
-        WHERE
-        name_distribution=#{name_distribution}
-        )
-        )
-		)
+        tp_handover_slip join tp_package on tp_handover_slip.id_package = tp_package.id_package
+        where tp_package.id_package = #{idPackage} and tp_handover_slip.handover_spot = #{name_distribution}
     </select>
 
     <update id="deleteHandover" parameterType="com.tiandi.logistics.entity.front.AddHandover">

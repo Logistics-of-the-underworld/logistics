@@ -26,6 +26,7 @@ public class HandoverPackage{
     private String idOrder;
     @ApiModelProperty(value = "交接单号")
     private String idHandoverOrder;
+
     @ApiModelProperty(value = "逻辑删除")
-    private Integer isDelete;
+    private Integer isDelete = 0;
 }

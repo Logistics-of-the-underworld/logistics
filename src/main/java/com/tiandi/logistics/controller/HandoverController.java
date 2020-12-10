@@ -42,26 +42,26 @@ public class HandoverController {
     @Autowired
     private HandoverPackageService handoverPackageService;
 
-    @GetMapping("/getAllHandover/{nameCompany}")
+    @GetMapping("/getAllHandover/{name_distribution}")
     @ApiOperation(value = "交接单信息接口",notes = "根据身份权限获取交接单的具体信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nameCompany", value = "所属公司", paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "nameDistribution", value = "所属公司", paramType = "query", dataType = "String"),
     })
     @ApiResponses({
             @ApiResponse(code = 40000, message = "交接单信息查询成功！"),
             @ApiResponse(code = 50011, message = "交接单信息查询失败，请重试！")
     })
-    public ResultMap getAllHandover(@RequestHeader String token,@PathVariable(value = "nameCompany",required = false) String name_company){
+    public ResultMap getAllHandover(@RequestHeader String token,@PathVariable(value = "name_distribution",required = false) String name_distribution){
         //获取身份权限
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
         //总公司管理员
         if ("root".equals(permission) && "admin".equals(role)){
             List<HandoverSlip> handoverSlips = handoverSlipService.getBaseMapper().selectList(new QueryWrapper<HandoverSlip>());
-            resultMap.success().message("查询交接单成功！").addElement("data",handoverSlipService);
+            resultMap.success().message("查询交接单成功！").addElement("data",handoverSlips);
             return resultMap;
-        }else if ("admin".equals(permission) && "headCompany".equals(role) && name_company != null){//省公司管理员
-            List<HandoverSlip> handover = handoverSlipService.getHandover(name_company);
+        }else if ("distribution".equals(role) && name_distribution != null){//省公司管理员
+            List<HandoverSlip> handover = handoverSlipService.getHandover(name_distribution);
             if (handover != null){
                 return resultMap.success().message("查询交接单成功！").addElement("data",handover);
             }else {
@@ -70,14 +70,14 @@ public class HandoverController {
         }
         return resultMap.fail();
     }
-    @GetMapping("/getHandoverByID{nameDistribution}")
-    public ResultMap getHandoverByID(@RequestHeader String token, @PathVariable("nameDistribution")String name_distribution){
+    @GetMapping("/getHandoverByidPackage/{idPackage}/{name_distribution}")
+    public ResultMap getHandoverByID(@RequestHeader String token, @PathVariable("idPackage")String idPackage,
+                                     @PathVariable(value = "name_distribution",required = false) String name_distribution){
         String permission = JWTUtil.getUserPermission(token);
         String role = JWTUtil.getUserRole(token);
-
-        if ("admin".equals(permission) && "distribution".equals(role) && name_distribution != null) {
-            String string = JSON.toJSONString(name_distribution);
-            List<HandoverSlip> handoverByID = handoverSlipService.getHandoverByID(string);
+        System.out.println("123");
+        if ("distribution".equals(role) && idPackage != null) {
+            List<HandoverSlip> handoverByID = handoverSlipService.getHandoverByID(idPackage,name_distribution);
             if (handoverByID != null){
                 return resultMap.success().message("查询交接单成功！").addElement("data",handoverByID);
             }else {

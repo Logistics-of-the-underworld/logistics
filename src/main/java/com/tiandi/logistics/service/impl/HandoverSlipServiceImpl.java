@@ -26,21 +26,21 @@ public class HandoverSlipServiceImpl extends ServiceImpl<HandoverSlipMapper, Han
     private HandoverSlipMapper handoverSlipMapper;
 
     @Override
-    public List<HandoverSlip> getHandover(String name_company) {
-        List<HandoverSlip> handover = handoverSlipMapper.getHandover(name_company);
+    public List<HandoverSlip> getHandover(String name_distribution) {
+        List<HandoverSlip> handover = handoverSlipMapper.getHandover(name_distribution);
         return handover;
     }
 
     @Override
-    public List<HandoverSlip> getHandoverByID(String name_distribution) {
-        List<HandoverSlip> handoverByID = handoverSlipMapper.getHandoverByID(name_distribution);
+    public List<HandoverSlip> getHandoverByID(String idPackage,String name_distribution) {
+        List<HandoverSlip> handoverByID = handoverSlipMapper.getHandoverByID(idPackage,name_distribution);
         return handoverByID;
     }
 
     @Override
     public int updateHandover(HandoverSlip handoverSlip) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("id_order",handoverSlip.getIdHandoverOrder());
+        queryWrapper.eq("id_handover_order",handoverSlip.getIdHandoverOrder());
         int update = handoverSlipMapper.update(handoverSlip, queryWrapper);
         return update;
     }
