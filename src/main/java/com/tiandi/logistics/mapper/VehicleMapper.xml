@@ -24,5 +24,6 @@
         SELECT tv.id_tp_vehicle,tv.id_license,tv.driver_name,tv.`type`,tv.state,tv.limit_kilogram,tv.limit_volume,DATE_FORMAT(tv.create_time,'%Y-%m-%d %H:%i:%S') AS ctime
         FROM tp_vehicle AS tv INNER JOIN tp_distribution AS td ON tv.id_distribution = td.id_distribution
         WHERE td.name_distribution = #{org}
+        AND tv.is_delete = 0
     </select>
 </mapper>

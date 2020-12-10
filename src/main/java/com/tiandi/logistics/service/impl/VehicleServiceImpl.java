@@ -62,16 +62,16 @@ public class VehicleServiceImpl extends ServiceImpl<VehicleMapper, Vehicle> impl
         condition.eq("id_distribution", idDistribution);
 
         //判断查询条件是否为空
-        if (id_license != null && !"undefined".equals(id_license)) {
+        if (id_license != null && !"undefined".equals(id_license) && id_license.length() > 1) {
             condition.eq("id_license", id_license);
         }
-        if (type != null && !"undefined".equals(type)) {
+        if (type != null && !"undefined".equals(type) && type.length() > 1) {
             condition.eq("type", type);
         }
         if (create_time != null && !"undefined".equals(create_time)) {
             condition.eq("create_time", create_time);
         }
-        if (state != null && !"undefined".equals(state)) {
+        if (state != null && !"undefined".equals(state) && state.length() > 0) {
             condition.eq("state", state);
         }
         //根据条件查询出车辆列表信息并分页
